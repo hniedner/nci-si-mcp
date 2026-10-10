@@ -426,7 +426,7 @@ def load_report(path: Path, mode: str) -> dict[str, Any]:
     if "transport" not in report or "run" not in report:
         raise SystemExit(f"{path} was written by an older suite; re-run it")
     if report["mode"] != mode:
-        expected = "a fixture run" if mode == "fixture" else "of a live run"
+        expected = "a fixture run" if mode == "fixture" else "a live run"
         raise SystemExit(f"{path} is the report of a {report['mode']} run, not {expected}")
     if not complete(report):
         raise SystemExit(f"{path} is an incomplete run; re-run it")
