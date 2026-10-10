@@ -220,10 +220,15 @@ def _acceptance(evidence: dict[str, Any], tool: str, story: str) -> str:
         )
     else:
         absent = "No report was produced. " if tools is None else ""
+        reason = evidence.get("completion_problem") or (
+            "selected cases without an outcome"
+            if evidence["missing"]
+            else f"run state: {evidence['state']}"
+        )
         body += (
             f"<p>{absent}Incomplete run; selected cases without an outcome: "
             f"{len(evidence['missing'])}; no verdict shown. "
-            f"{text(evidence.get('completion_problem') or evidence['state'])}.</p>"
+            f"{text(reason)}.</p>"
         )
     body += _table(
         "Acceptance cases",
