@@ -13,6 +13,7 @@ from conftest import STAND_IN, SUITE
 pytest_plugins = ["pytester"]
 
 FAMILIES = {
+    "discovery": ("pin", "test_pin"),
     "include": ("evs", "test_an_include_value_returns_its_section_and_no_other"),
     "identity": (
         "evs",
@@ -97,13 +98,12 @@ CDE_SECTIONS = {
 }
 
 
-def reply(tool, arguments, result, family=None, broken=None):
+def reply(tool, arguments, result, family=None):
     return {
         "tool": tool,
         "arguments": arguments,
-        "result": result,
+        "result": deepcopy(result),
         "family": family,
-        "broken": broken,
     }
 
 
@@ -113,6 +113,7 @@ def replies():
             "resolve_release",
             {"terminology": "ncit", "channel": "monthly"},
             {"terminology": "ncit", "channel": "monthly", "version": "99.test"},
+            "discovery",
         ),
         reply(
             "resolve_registry_release",
@@ -124,16 +125,13 @@ def replies():
             },
         ),
     ]
-    rows.append(
-        reply("get_concept", PIN | {"code": "C4817"}, CONCEPT, "identity", CONCEPT | {"name": ""})
-    )
+    rows.append(reply("get_concept", PIN | {"code": "C4817"}, CONCEPT, "identity"))
     rows += [
         reply(
             "get_concept",
             PIN | {"code": "C4817", "include": [section]},
             CONCEPT | {section: value},
             "include",
-            CONCEPT,
         )
         for section, value in EVS_SECTIONS.items()
     ]
@@ -145,7 +143,6 @@ def replies():
             PIN | {"code": "C4817", "direction": "pathsToRoot"},
             paths,
             "paths",
-            paths | {"paths": [["C999", "C1"]]},
         )
     )
     mapping = {
@@ -161,7 +158,6 @@ def replies():
             PIN | {"code": "C4817"},
             {"mappings": [mapping]},
             "maps",
-            {"mappings": [mapping | {"targetCode": ""}]},
         )
     )
     relation = {
@@ -178,7 +174,6 @@ def replies():
             PIN,
             {"relationships": [relation]},
             "relationships",
-            {"relationships": [relation | {"kind": "invented"}]},
         )
     )
     return rows + cde_replies() + cross_replies()
@@ -191,23 +186,20 @@ def cde_replies():
             {"publicId": "2200604"},
             ELEMENT,
             "element",
-            ELEMENT | {"version": []},
         ),
         reply(
             "get_data_element",
             {"publicId": "2200604", "version": "1"},
             ELEMENT | {"version": "1"},
             "element",
-            ELEMENT | {"version": "99"},
         ),
     ]
     return rows + [
         reply(
             "get_data_element",
             {"publicId": "2200604", "include": [section]},
-            ELEMENT | {section: value},
+            ELEMENT | {section: deepcopy(value)},
             "sections",
-            ELEMENT,
         )
         for section, value in CDE_SECTIONS.items()
     ]
@@ -222,16 +214,12 @@ def cross_replies():
         "dataElement": {"publicId": "882", "version": "9", "longName": "New CDE"},
         "provenance": origin,
     }
-    broken = item | {
-        "provenance": origin | {"release": {"terminology": "ncit", "identifier": "old"}}
-    }
     return [
         reply(
             "find_data_elements_for_concept",
             PIN | {"conceptCode": "C17357", "expandDescendants": expand},
             {"dataElements": [item]},
             "cross-domain",
-            {"dataElements": [broken]},
         )
         for expand in (False, True)
     ]
@@ -241,6 +229,12 @@ def cross_replies():
 def live_suite(compliant, monkeypatch):
     for module in ("evs", "cadsr", "cross_domain"):
         shutil.copy(SUITE / f"test_{module}.py", compliant.path / "tests")
+    # A real fixture consumer isolates discovery from later content checks.
+    (compliant.path / "tests/test_pin.py").write_text(
+        "import pytest\n@pytest.mark.live_capable\n"
+        "@pytest.mark.tool('resolve_release')\n"
+        "def test_pin(content_pin):\n    assert isinstance(content_pin, dict)\n"
+    )
     # Original cases still read these before the live-mode change; retain real old evidence.
     for relative in (
         "evs/concepts/C4817.json",
@@ -265,12 +259,14 @@ def live_suite(compliant, monkeypatch):
     return compliant
 
 
-def run_family(suite, family, malformed=False, replacement=None):
-    responses = deepcopy(replies())
-    for row in responses:
-        if malformed and row["family"] == family:
-            row["result"] = row["broken"]
-        if replacement is not None and row["family"] == family:
+def run_family(suite, family, replacement=None, corruption=None):
+    responses = replies()
+    selected = [row for row in responses if row["family"] == family]
+    if corruption is not None:
+        index, path, value = corruption
+        corrupt(selected[index]["result"], path, value)
+    for row in selected:
+        if replacement is not None:
             row["result"] = replacement
     (suite.path / "replies.json").write_text(json.dumps(responses))
     module, function = FAMILIES[family]
@@ -297,20 +293,102 @@ def test_live_checks_accept_changed_release_and_content(live_suite, family):
     assert result.ret == 0
 
 
-@pytest.mark.parametrize("family", FAMILIES)
-def test_live_checks_reject_malformed_content(live_suite, family):
-    result, outcomes = run_family(live_suite, family, malformed=True)
-    assert outcomes and all(
-        value == ("not_live" if "[retired]" in node else "failed")
-        for node, value in outcomes.items()
-    )
-    assert result.ret == 1
+MISSING = object()
 
 
-@pytest.mark.parametrize("content", [{}, {"relationships": None}, {"relationships": 42}])
-def test_live_catalogue_refuses_a_missing_or_non_list_container(live_suite, content):
-    result, outcomes = run_family(live_suite, "relationships", replacement=content)
-    assert outcomes and set(outcomes.values()) == {"failed"}
+def corrupt(content, path, value):
+    keys = [int(key) if key.isdigit() else key for key in path.split(".")]
+    for key in keys[:-1]:
+        content = content[key]
+    if value is MISSING:
+        del content[keys[-1]]
+    else:
+        content[keys[-1]] = value
+
+
+# Each row changes one property of one otherwise valid reply, not a bundle of defects.
+CORRUPTIONS = (
+    [
+        ("discovery", 0, "terminology", "other"),
+        ("discovery", 0, "version", ""),
+        ("identity", 0, "code", "C999"),
+        ("identity", 0, "terminology", "other"),
+        ("identity", 0, "name", ""),
+        ("identity", 0, "active", "true"),
+        ("identity", 0, "status", ""),
+        ("element", 0, "publicId", "9999999"),
+        ("element", 0, "version", []),
+        ("element", 1, "version", "99"),
+        ("element", 0, "context", MISSING),
+        ("element", 0, "extra", True),
+        ("sections", 0, "publicId", "9999999"),
+        ("sections", 1, "valueDomain", []),
+        ("sections", 0, "valueDomain", {}),
+        ("include", 0, "definitions", []),
+        ("include", 0, "synonyms.0", "wrong type"),
+        ("include", 3, "semanticType.0", {}),
+        ("paths", 0, "paths", []),
+        ("paths", 0, "paths.0.0", "C1"),
+        ("paths", 0, "nodes.0.code", "C999"),
+        ("relationships", 0, "relationships.0.kind", "invented"),
+        ("relationships", 0, "relationships.0.polarity", "unknown"),
+    ]
+    + [
+        (family, 0, prefix + "provenance.release." + field, value)
+        for family, prefix in (
+            ("include", ""),
+            ("identity", ""),
+            ("paths", "nodes.0."),
+            ("maps", "mappings.0."),
+            ("relationships", "relationships.0."),
+            ("cross-domain", "dataElements.0."),
+        )
+        for field, value in (("identifier", "old"), ("terminology", "other"))
+    ]
+    + [
+        (family, 0, "provenance.release." + field, value)
+        for family in ("element", "sections")
+        for field, value in (("identifier", "old"), ("registry", "other"))
+    ]
+    + [
+        ("maps", 0, "mappings.0." + field, value)
+        for field in ("targetCode", "targetTerminology", "targetName", "type")
+        for value in (MISSING, "")
+    ]
+    + [
+        ("relationships", 0, "relationships.0." + field, "")
+        for field in ("terminology", "code", "name")
+    ]
+    + [
+        ("cross-domain", 0, "dataElements.0.dataElement." + field, MISSING)
+        for field in ("publicId", "version", "longName")
+    ]
+    + [
+        ("cross-domain", 0, "dataElements.0.provenance.source", value)
+        for value in (MISSING, "evs_rest")
+    ]
+    + [
+        (family, 0, field, value)
+        for family, field in (
+            ("maps", "mappings"),
+            ("relationships", "relationships"),
+            ("cross-domain", "dataElements"),
+            ("paths", "paths"),
+            ("include", "synonyms"),
+            ("sections", "permissibleValues"),
+        )
+        for value in (MISSING, None, {}, 42)
+    ]
+)
+
+
+@pytest.mark.parametrize(
+    ("family", "index", "path", "value"),
+    [pytest.param(*row, id=f"{row[0]}-{row[1]}-{row[2]}-{i}") for i, row in enumerate(CORRUPTIONS)],
+)
+def test_live_checks_reject_single_corruptions(live_suite, family, index, path, value):
+    result, outcomes = run_family(live_suite, family, corruption=(index, path, value))
+    assert "failed" in outcomes.values(), outcomes
     assert result.ret == 1
 
 
