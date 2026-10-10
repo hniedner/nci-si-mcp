@@ -102,8 +102,8 @@ The run page shows tool verdicts only when `inventory_complete` is true. Otherwi
 the number of selected cases without an outcome and explicitly withholds verdicts; recorded
 case outcomes remain visible, including when a crash leaves no cases missing.
 The notice also names the harness's completion failure (such as a worker crash or run exit
-status), or the recorded execution state for historical evidence, so zero missing cases
-cannot conceal why a verdict was withheld.
+status). Historical evidence names missing selected outcomes, or the recorded execution
+state when none are missing, so zero missing cases cannot conceal why a verdict was withheld.
 
 ### Benchmark projection and comparisons
 
