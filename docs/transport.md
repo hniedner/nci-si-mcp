@@ -119,6 +119,11 @@ This prototype does not choose a production identity provider or store a transpo
 Missing/invalid credentials return HTTP 401; insufficient scope returns HTTP 403. Refused
 requests never reach the registry or emit a tool completion audit containing caller content.
 They emit one `http_auth_rejected` JSON diagnostic with the status, without the token or body.
+
+Both Bearer challenges advertise the integration's required scopes and the SDK's protected-resource
+metadata URL, following MCP's [scope selection guidance](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization#scope-selection-strategy).
+The metadata names the configured resource, authorization server and supported scopes. It remains
+subject to Host/Origin admission. An existing SDK scope challenge is preserved, not duplicated.
 Production security approval is required before public exposure. Completion audit remains in
 the shared invocation boundary; auth refusal diagnostics contain neither token nor body.
 
