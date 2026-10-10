@@ -69,6 +69,7 @@ def entry_point(environment):
             "PATH": os.environ["PATH"],
             "NCI_SI_DATA_DIR": directory,
             "NCI_SI_EMBEDDING_PROVIDER": "hashing",
+            "NCI_SI_EMBEDDING_MODEL": "hashing",
             "NCI_SI_HTTP_PORT": str(port),
         }
         with Path(directory, "stderr").open("w+") as stderr:
