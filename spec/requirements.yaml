@@ -119,7 +119,10 @@ X-22:
     release no longer served fails with release_not_available naming it and asking the caller
     to start a new session or name a release, never silently re-resolving. Other terminologies
     require an explicit release (invalid_request naming release). CLI invocations and requests
-    without a session resolve per call; no process-wide default is kept. Cursors bind the
+    without a session resolve per call; no process-wide default is kept. HTTP requests on
+    sessionless protocol versions (2026-07-28 and later) are requests without a session,
+    regardless of NCI_SI_HTTP_SESSIONS; stdio retains its connection-local pin in both eras.
+    Cursors bind the
     effective release. Completion audit records whether the release was explicit, session-held
     or freshly-resolved. Implicit NCIt calls carry ttlMs 0 and cacheScope private (M2.2);
     explicit-release calls and resources retain their existing policy. Missing, ambiguous or mismatched release identity fails closed.

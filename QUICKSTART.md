@@ -111,7 +111,7 @@ A leading `~` is expanded, and an empty value is rejected. The other settings:
 | `NCI_SI_TRANSPORT` | `stdio` | Serve over stdio or streamable-http; `serve --transport` overrides this setting |
 | `NCI_SI_HTTP_HOST` | `127.0.0.1` | HTTP bind address; binding all interfaces does not relax the Host allow-list |
 | `NCI_SI_HTTP_PORT` | `8000` | HTTP port, 1–65535; MCP endpoint is /mcp |
-| `NCI_SI_HTTP_SESSIONS` | `stateful` | stateful retains each session's implicit release and needs process affinity; stateless resolves omitted releases per call and needs no affinity |
+| `NCI_SI_HTTP_SESSIONS` | `stateful` | stateful retains handshake-era sessions' implicit releases and needs process affinity; stateless and sessionless 2026-07-28 HTTP resolve per call without affinity |
 | `NCI_SI_HTTP_AUTH_MODE` | `trusted-local` | The container image presets `required`, refusing HTTP startup without a complete approved integration; cannot serve stdio. Trusted local image use requires an explicit `trusted-local` opt-out and loopback-only publishing; see [container operation](docs/container.md) |
 | `NCI_SI_HTTP_AUTH_FACTORY` | unset | In required mode, an installed `module:factory` returning SDK authentication and caller policy; see [governed HTTP](docs/governed-http.md) |
 | `NCI_SI_HTTP_MAX_REQUEST_BYTES` | `4194304` | Maximum HTTP request body bytes, including chunked bodies; oversized requests return 413 before parsing |
@@ -476,7 +476,9 @@ and carries no generated titles.
 A parameter caDSR does not serve yet says so there, with its requirement identifier, and is left unset.
 
 For NCIt content tools, omit `release` (or use `null`) to resolve the configured monthly/weekly
-channel once. The first implicit release stays pinned for that MCP session. An explicit release
+channel once per call. The first implicit release stays pinned for a stateful handshake HTTP
+session or stdio connection. Sessionless 2026-07-28 HTTP resolves per call even in stateful mode;
+pass the release from the first result's provenance explicitly to keep content stable. An explicit release
 applies only to that call and never changes the session pin. Other terminologies require an
 explicit release. If EVS withdraws the session release, start a new session or name a release;
 the server never silently switches it. Cursors bind the effective release. For example, call

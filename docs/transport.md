@@ -31,6 +31,8 @@ their usual cache policy.
 The SDK also supports the 2026-07-28 single-exchange protocol. It has no HTTP session or
 initialize handshake, even when the server setting is stateful. It therefore resolves omitted
 releases per call under X-22. Session affinity cannot create a release pin for that protocol.
+Pass the release named in the first result's provenance explicitly when later calls must use
+the same content. Stdio retains its connection-local implicit pin in both protocol eras.
 Native list/resource cache fields also belong to the 2026 protocol: the SDK removes them for
 older clients. Tool hints in `_meta` remain available on handshake protocols.
 

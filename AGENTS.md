@@ -380,7 +380,10 @@ update them when behaviour changes.
   other count is `release_not_available`, with no fallback to another channel. EVS sets `latest`
   per channel, so the unfiltered listing can show two `ncit` rows as latest. `resolve_release`
   resolves the channel once per call. NCIt content calls may omit `release`: the shared
-  invocation scope resolves it once or reuses the MCP session’s first implicit pin. Explicit
+  invocation scope resolves it once or reuses the first implicit pin of a stateful handshake
+  HTTP session or stdio connection. Sessionless 2026-07-28 HTTP resolves per call regardless of
+  `NCI_SI_HTTP_SESSIONS`; callers needing stable content pass the first result's provenance
+  release explicitly. Explicit
   calls never change that pin; other terminologies require release. No process-wide pin is
   retained. Stateless HTTP and CLI resolve per call. A withdrawn session pin fails closed
   without rediscovery, asking for a new session or explicit release. Completion audit names
