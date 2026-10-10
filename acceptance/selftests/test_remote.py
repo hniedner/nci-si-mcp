@@ -334,13 +334,20 @@ def test_requests_without_a_fixture_while_the_hook_starts_the_server_fail_depend
 ):
     monkeypatch.setenv("NCI_SI_ACCEPTANCE_STATE_HOOK", fetches_at_startup("/api/v1/nothing"))
 
-    result, report = remote(TOOLS_LIST)
+    result, report = remote(TOOLS_LIST, "tests/test_echo.py")
 
+    assert outcomes_of(report) == {
+        TOOLS_LIST.partition("::")[2]: "no_fixture",
+        "test_echo": "no_fixture",
+        "test_echo_token": "no_fixture",
+    }
+    assert all(
+        test["unmatched"] == ["GET evs /api/v1/nothing {}"] for test in report["tests"].values()
+    )
     assert result.ret == 1
     result.stdout.fnmatch_lines(
         ["*upstream requests without a fixture while the server started:*", "*/api/v1/nothing*"]
     )
-    assert outcomes_of(report) == {TOOLS_LIST.partition("::")[2]: "failed"}
 
 
 def test_a_failed_scenario_state_change_is_reported_for_its_test(remote, monkeypatch):
