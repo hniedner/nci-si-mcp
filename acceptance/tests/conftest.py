@@ -213,7 +213,7 @@ def prepared(
             f"the prepare command failed with exit status {ran.returncode}:\n{said}", pytrace=False
         )
     if unmatched := unmatched_requests(_startup_requests(upstream)):
-        pytest.fail(str(UnmatchedUpstream(unmatched, " while preparing")), pytrace=False)
+        raise UnmatchedUpstream(unmatched, " while preparing")
     return data
 
 

@@ -128,7 +128,8 @@ fixture. Every setting the suite gives a server, and its format, is in the speci
 In fixture mode a test fails when one of its upstream requests found no fixture, and so does a
 server whose requests while it starts found none: the server may treat the refusal as an outage
 and still answer plausibly. A test that provokes such requests on purpose is marked
-`unmatched_upstream`.
+`unmatched_upstream`. Unmatched preparation and startup requests, including remote startup,
+remain `no_fixture` outcomes with the missing requests listed, not ordinary `failed` outcomes.
 
 ## Remote server
 

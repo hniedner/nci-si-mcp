@@ -97,7 +97,7 @@ def _require_fixture_requests(
     upstream: FixtureServer, asked: bool, startup: Sequence[dict[str, Any]]
 ) -> None:
     if unmatched := unmatched_requests(startup):
-        pytest.fail(str(UnmatchedUpstream(unmatched, " while the server started")), pytrace=False)
+        raise UnmatchedUpstream(unmatched, " while the server started")
     if asked and not (startup or upstream.log()):
         pytest.fail(NOT_REACHING, pytrace=False)
 
