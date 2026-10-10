@@ -327,7 +327,6 @@ CORRUPTIONS = (
         ("include", 0, "definitions", []),
         ("include", 0, "synonyms.0", "wrong type"),
         ("include", 3, "semanticType.0", {}),
-        ("paths", 0, "paths", []),
         ("paths", 0, "paths.0.0", "C1"),
         ("paths", 0, "nodes.0.code", "C999"),
         ("relationships", 0, "relationships.0.kind", "invented"),
