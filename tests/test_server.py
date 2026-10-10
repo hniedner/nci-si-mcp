@@ -223,6 +223,8 @@ class ServerTest(ServerFixture):
         info, instructions = self.session(server_info)
 
         self.assertEqual((info.name, info.version), ("nci-si-mcp", metadata.version("nci-si-mcp")))
+        self.assertRegex(instructions, r"2026-07-28 HTTP.*per call")
+        self.assertRegex(instructions, r"pin.*handshake.*stdio")
         self.assertEqual(instructions, INSTRUCTIONS)
 
     def test_tools_are_registered_with_descriptions_and_closed_value_sets(self, _):
