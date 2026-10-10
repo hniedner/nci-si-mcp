@@ -1,7 +1,7 @@
 """The EVS tools' own requirements (spec/requirements.yaml), each test against its tool.
 
-What a test expects it reads from the recordings (the `recorded` fixture). A fact it cannot
-read there is named beside it, with the fixture file that holds it.
+Fixture expectations come from recordings. Live content checks discover the current release
+and assert stable contracts instead of comparing historical content.
 """
 
 import json
@@ -14,7 +14,7 @@ from urllib.parse import urlsplit
 import pytest
 import yaml
 
-from nci_si_acceptance.results import error_code, requests_naming
+from nci_si_acceptance.results import error_code, is_name, release_of, requests_naming
 from nci_si_acceptance.spec import RECORDS, TOOLS, items_of
 from nci_si_acceptance.suite import index_set
 
@@ -131,16 +131,25 @@ def _recorded_section(body, section):
 
 @pytest.mark.tool("get_concept")
 @pytest.mark.requirement("get_concept-1")
+@pytest.mark.live_capable
 @pytest.mark.parametrize("section", SECTIONS)
-def test_an_include_value_returns_its_section_and_no_other(tools, pinned, recorded, section):
-    body = recorded(CURRENT)["response"]["body"]
-
-    result = _concept(tools, pinned, CONCEPT, include=[section])
+def test_an_include_value_returns_its_section_and_no_other(
+    tools, content_pin, target, recorded, section
+):
+    result = _concept(tools, content_pin, CONCEPT, include=[section])
 
     assert not result.is_error, result.content
     # Any other key is another section, whether the record names it or not (parents, roles).
     assert set(result.content) - set(BASE) == {section}
-    assert result.content[section] == _recorded_section(body, section)
+    if target.mode == "fixture":
+        body = recorded(CURRENT)["response"]["body"]
+        assert result.content[section] == _recorded_section(body, section)
+    else:
+        entries = result.content[section]
+        assert isinstance(entries, list)
+        kind = str if section == "semanticType" else dict
+        assert all(isinstance(entry, kind) for entry in entries)
+        assert release_of(result.content) == ("ncit", content_pin["release"])
 
 
 @pytest.mark.tool("get_concept")
@@ -155,6 +164,7 @@ def test_descendants_is_no_include_value(tools, pinned):
 
 @pytest.mark.tool("get_concept")
 @pytest.mark.requirement("get_concept-3")
+@pytest.mark.live_capable
 @pytest.mark.parametrize(
     ("code", "recording"),
     [
@@ -165,15 +175,20 @@ def test_descendants_is_no_include_value(tools, pinned):
     ],
 )
 def test_a_concept_carries_its_identity_and_the_status_the_platform_publishes(
-    tools, pinned, recorded, code, recording
+    tools, content_pin, target, recorded, code, recording
 ):
-    body = recorded(recording)["response"]["body"]
-
-    result = _concept(tools, pinned, code)
+    result = _concept(tools, content_pin, code)
 
     assert not result.is_error, result.content
     assert [name for name in ALWAYS if name not in result.content] == []
     returned = [result.content[name] for name in ("code", "terminology", "name", "active")]
+    if target.mode == "live":
+        assert returned[:2] == [code, "ncit"]
+        assert is_name(returned[2]) and isinstance(returned[3], bool)
+        assert is_name(result.content.get("status"))
+        assert release_of(result.content) == ("ncit", content_pin["release"])
+        return
+    body = recorded(recording)["response"]["body"]
     assert returned == [body[name] for name in ("code", "terminology", "name", "active")]
     # EVS publishes a status for every concept, as conceptStatus; the record passes it on.
     assert result.content.get("status") == body["conceptStatus"]
@@ -774,17 +789,21 @@ def test_a_depth_above_the_maximum_is_applied_as_the_maximum_and_reported(tools,
 
 @pytest.mark.tool(HIERARCHY)
 @pytest.mark.requirement("get_concept_hierarchy-2")
-def test_paths_to_root_are_the_platform_s_paths_in_its_order(tools, pinned, recorded):
-    paths = [_codes_of(path) for path in recorded(PATHS)["response"]["body"]]
-
-    result = _traverse(tools, pinned, HIERARCHY, CONCEPT, direction="pathsToRoot")
-
-    assert result.content.get("paths") == paths
+@pytest.mark.live_capable
+def test_paths_to_root_are_the_platform_s_paths_in_its_order(tools, content_pin, target, recorded):
+    result = _traverse(tools, content_pin, HIERARCHY, CONCEPT, direction="pathsToRoot")
+    paths = result.content.get("paths")
+    if target.mode == "fixture":
+        assert paths == [_codes_of(path) for path in recorded(PATHS)["response"]["body"]]
+    else:
+        assert isinstance(paths, list) and paths
+        assert all(isinstance(path, list) and path and path[0] == CONCEPT for path in paths)
     # Each concept on the paths once among the nodes, the one asked about not among them.
     reached = {code for path in paths for code in path} - {CONCEPT}
     nodes = result.content.get("nodes", [])
     assert sorted(_codes_of(nodes)) == sorted(reached)
     assert _unmarked(nodes) == []
+    assert all(release_of(node) == ("ncit", content_pin["release"]) for node in nodes)
 
 
 @pytest.mark.tool(HIERARCHY)
@@ -1032,12 +1051,22 @@ def _maps(result):
 
 @pytest.mark.tool("get_concept_mappings")
 @pytest.mark.requirement("get_concept_mappings-1")
-def test_the_mappings_are_the_concept_s_maps_unchanged_in_order(tools, pinned, recorded):
-    maps = recorded(CURRENT)["response"]["body"]["maps"]
-
-    mappings = _maps(_traverse(tools, pinned, "get_concept_mappings", CONCEPT))
-
-    assert mappings == maps
+@pytest.mark.live_capable
+def test_the_mappings_are_the_concept_s_maps_unchanged_in_order(
+    tools, content_pin, target, recorded
+):
+    result = _traverse(tools, content_pin, "get_concept_mappings", CONCEPT)
+    if target.mode == "fixture":
+        assert _maps(result) == recorded(CURRENT)["response"]["body"]["maps"]
+    else:
+        mappings = result.content.get("mappings")
+        assert isinstance(mappings, list)
+        for mapping in mappings:
+            assert all(
+                is_name(mapping.get(key))
+                for key in ("targetCode", "targetTerminology", "targetName", "type")
+            )
+            assert release_of(mapping) == ("ncit", content_pin["release"])
 
 
 @pytest.mark.tool("get_concept_mappings")
@@ -1144,9 +1173,19 @@ def _relationships(tools, pinned):
 
 @pytest.mark.tool("list_relationships")
 @pytest.mark.requirement("list_relationships-1")
+@pytest.mark.live_capable
 def test_every_relationship_of_the_catalogue_is_listed_by_code_name_and_kind(
-    tools, pinned, recorded
+    tools, content_pin, target, recorded
 ):
+    listed = _relationships(tools, content_pin)
+    if target.mode == "live":
+        for item in listed:
+            assert is_name(item.get("code")) and is_name(item.get("name"))
+            assert item.get("kind") in ("role", "association")
+            assert item.get("polarity") in ("positive", "negative")
+            assert item.get("terminology") == "ncit"
+            assert release_of(item) == ("ncit", content_pin["release"])
+        return
     expected = sorted(
         (
             (entry["code"], entry["name"], kind)
@@ -1155,8 +1194,6 @@ def test_every_relationship_of_the_catalogue_is_listed_by_code_name_and_kind(
         ),
         key=str,
     )
-
-    listed = _relationships(tools, pinned)
 
     found = [(item.get("code"), item.get("name"), item.get("kind")) for item in listed]
     assert sorted(found, key=str) == expected

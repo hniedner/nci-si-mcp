@@ -111,6 +111,19 @@ def pinned() -> dict[str, str]:
     return {"terminology": terminology, "release": release}
 
 
+@pytest.fixture
+def content_pin(tools, target, pinned):
+    """Recorded release for fixture content; the current monthly release for live content."""
+    if target.mode == "fixture":
+        return pinned
+    result = tools.call("resolve_release", {"terminology": "ncit", "channel": "monthly"})
+    assert not result.is_error, result.content
+    assert result.content.get("terminology") == "ncit"
+    version = result.content.get("version")
+    assert isinstance(version, str) and version.strip(), result.content
+    return {"terminology": "ncit", "release": version}
+
+
 @pytest.fixture(scope="session")
 def recorded() -> Callable[[str], Any]:
     """A fixture file by its path under fixtures/, read as JSON: a test derives what it expects

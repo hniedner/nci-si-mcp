@@ -6,8 +6,8 @@ live. So a test reads the surface the result's provenance names and checks the a
 that surface's recording, never one surface against another. The release a call requires can be
 verified only against the Shared SI Service's NCIt graph, so the Shared SI Service answers.
 
-What a test expects it reads from the recordings (the `recorded` fixture). A fact it cannot
-read there is named beside it, with the fixture file that holds it.
+Fixture expectations come from recordings; live discovery checks identities and provenance
+against the current NCIt release rather than assuming historical graph content.
 """
 
 from datetime import date, datetime
@@ -21,6 +21,8 @@ from nci_si_acceptance.results import (
     element_ids,
     error_code,
     export_date,
+    is_name,
+    release_of,
     sparql_rows,
     value_ids,
 )
@@ -57,20 +59,29 @@ def _find(tools, pinned, **arguments):
 
 @pytest.mark.tool(FIND)
 @pytest.mark.requirement("find_data_elements_for_concept-1")
+@pytest.mark.live_capable
 @pytest.mark.parametrize(
     ("expand", "recording"),
     [(False, "data-elements-c17357"), (True, "data-elements-c17357-descendants")],
 )
 def test_the_data_elements_are_the_concept_s_and_with_expansion_its_descendants_too(
-    tools, pinned, recorded, expand, recording
+    tools, content_pin, target, recorded, expand, recording
 ):
-    expected = {(row["id"], row["version"]) for row in _rows(recorded, recording)}
-
-    content = _ok(_find(tools, pinned, expandDescendants=expand))
+    content = _ok(_find(tools, content_pin, expandDescendants=expand))
 
     # The release is verified against the NCIt graph, so the Shared SI Service answers.
     assert _sources(content["dataElements"]) == {"ssis_sparql"}
-    assert element_ids(content["dataElements"]) == expected
+    if target.mode == "fixture":
+        expected = {(row["id"], row["version"]) for row in _rows(recorded, recording)}
+        assert element_ids(content["dataElements"]) == expected
+    else:
+        assert isinstance(content["dataElements"], list)
+        for item in content["dataElements"]:
+            assert all(
+                is_name(item.get("dataElement", {}).get(key))
+                for key in ("publicId", "version", "longName")
+            )
+            assert release_of(item) == ("ncit", content_pin["release"])
     assert "permissibleValues" not in content
 
 

@@ -84,13 +84,21 @@ upstream requests it made while it started. A test marked
 `live_capable` also runs in live mode, unless it selects a scenario; every other test runs
 against fixtures only.
 
-Live coverage includes protocol/discovery checks, ten caDSR argument-validation or declared
-capability cases that need neither credentials nor upstream content, and release-cache
-metadata. One bounded content journey discovers the current monthly NCIt release and retrieves
-`C4817`, checking its identity and provenance against that discovered release. It makes two MCP
-calls and prepares no index. Errors, empty content and mismatched provenance fail that journey;
-they are not accepted as alternatives to success. These checks do not certify all tool modes
-or caDSR content access. The report retains every fixture-only case as not run in live mode.
+Live coverage has 46 marked cases out of 965; 45 can run live, since the retired-concept
+scenario remains fixture-only. Alongside protocol, discovery, argument and cache checks,
+content checks discover the current monthly NCIt release for concept identity, includes,
+paths, maps, relationship catalogues and cross-domain CDE discovery. They check contracts
+and matching release provenance, not historical names, counts or order; fixture mode retains
+the exact recorded comparisons. These bounded calls prepare no index. Upstream errors and
+mismatched provenance fail, never become `not_live`.
+
+Both CDE identity/version and include families run anonymously. Their five sections come
+from the data element API's DataElement response (ValueDomain, DataElementConcept,
+AlternateNames and ClassificationSchemes), not CDE Match or the credentialed lists-of-values
+API. The calls are unpinned registry reads; an explicit version is the CDE's own, never an
+NCIt release or an export date, so these cases need no registry-release discovery. Operations
+that need credentials remain fixture-only. This coverage does not certify all tool modes;
+the report retains every fixture-only case as not run in live mode.
 
 A test that passes against fixtures and fails live means a fixture is wrong (corrected by
 re-recording, under change control) or the live service has changed: both are findings. One

@@ -524,18 +524,18 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 | An unavailable source yields an upstream error or timeout, not empty success. | 26 | [`X-5`](specification.md#requirement-X-5) | [Test](../acceptance/tests/test_crosscutting.py#L286) |
 | Each supported source's success-shaped error response is recognized as failure. | 1 | [`X-15`](specification.md#requirement-X-15) | [Test](../acceptance/tests/test_crosscutting.py#L429) |
 | A valid search with no matches succeeds with an empty result, provenance and no continuation token. | 6 | [`X-4`](specification.md#requirement-X-4) | [Test](../acceptance/tests/test_crosscutting.py#L450) |
-| caDSR requests ask for JSON so that the expected content is retrieved rather than an HTML page. | 1 | [`X-15`](specification.md#requirement-X-15) | [Test](../acceptance/tests/test_cadsr.py#L34) |
-| An unknown caDSR data element reported inside HTTP success is not_found, never empty success. | 1 | [`X-15`](specification.md#requirement-X-15) | [Test](../acceptance/tests/test_cadsr.py#L52) |
-| HTML received instead of requested JSON is rejected as an upstream failure. | 1 | [`X-15`](specification.md#requirement-X-15) | [Test](../acceptance/tests/test_cadsr.py#L64) |
-| A contract-defined caDSR request refusal is presented as an invalid request. | 1 | [`X-15`](specification.md#requirement-X-15) | [Test](../acceptance/tests/test_cadsr.py#L78) |
+| caDSR requests ask for JSON so that the expected content is retrieved rather than an HTML page. | 1 | [`X-15`](specification.md#requirement-X-15) | [Test](../acceptance/tests/test_cadsr.py#L36) |
+| An unknown caDSR data element reported inside HTTP success is not_found, never empty success. | 1 | [`X-15`](specification.md#requirement-X-15) | [Test](../acceptance/tests/test_cadsr.py#L54) |
+| HTML received instead of requested JSON is rejected as an upstream failure. | 1 | [`X-15`](specification.md#requirement-X-15) | [Test](../acceptance/tests/test_cadsr.py#L66) |
+| A contract-defined caDSR request refusal is presented as an invalid request. | 1 | [`X-15`](specification.md#requirement-X-15) | [Test](../acceptance/tests/test_cadsr.py#L80) |
 
 <details>
 <summary>Exact executable cases (37)</summary>
 
-- <code>acceptance/tests/test_cadsr.py::test_a_failure_inside_an_http_200_is_an_error_never_an_empty_success</code> — [source](../acceptance/tests/test_cadsr.py#L52)
-- <code>acceptance/tests/test_cadsr.py::test_a_refusal_inside_an_http_200_is_an_invalid_request</code> — [source](../acceptance/tests/test_cadsr.py#L78)
-- <code>acceptance/tests/test_cadsr.py::test_a_server_that_leaves_out_accept_gets_html_and_never_parses_it</code> — [source](../acceptance/tests/test_cadsr.py#L34)
-- <code>acceptance/tests/test_cadsr.py::test_html_where_json_was_asked_for_is_an_upstream_error</code> — [source](../acceptance/tests/test_cadsr.py#L64)
+- <code>acceptance/tests/test_cadsr.py::test_a_failure_inside_an_http_200_is_an_error_never_an_empty_success</code> — [source](../acceptance/tests/test_cadsr.py#L54)
+- <code>acceptance/tests/test_cadsr.py::test_a_refusal_inside_an_http_200_is_an_invalid_request</code> — [source](../acceptance/tests/test_cadsr.py#L80)
+- <code>acceptance/tests/test_cadsr.py::test_a_server_that_leaves_out_accept_gets_html_and_never_parses_it</code> — [source](../acceptance/tests/test_cadsr.py#L36)
+- <code>acceptance/tests/test_cadsr.py::test_html_where_json_was_asked_for_is_an_upstream_error</code> — [source](../acceptance/tests/test_cadsr.py#L66)
 - <code>acceptance/tests/test_crosscutting.py::test_a_failure_every_surface_masks_as_an_answer_is_an_upstream_error[find_data_elements_for_concept]</code> — [source](../acceptance/tests/test_crosscutting.py#L429)
 - <code>acceptance/tests/test_crosscutting.py::test_a_query_that_matches_nothing_is_an_empty_result_with_provenance[find_data_elements_for_concept]</code> — [source](../acceptance/tests/test_crosscutting.py#L450)
 - <code>acceptance/tests/test_crosscutting.py::test_a_query_that_matches_nothing_is_an_empty_result_with_provenance[get_code_map]</code> — [source](../acceptance/tests/test_crosscutting.py#L450)
@@ -1185,21 +1185,21 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 |---|---:|---|---|
 | Unpinned items name the caDSR registry without an invented release identifier or date. | 9 | [`X-21`](specification.md#requirement-X-21) | [Test](../acceptance/tests/test_crosscutting.py#L220) |
 | Asking for an unpublished registry release fails instead of falling back to unpinned content. | 9 | [`X-21`](specification.md#requirement-X-21) | [Test](../acceptance/tests/test_crosscutting.py#L236) |
-| Registry status uses the export's reported date and distribution without claiming a published release. | 1 | [`resolve_registry_release-1`](specification.md#requirement-resolve_registry_release-1) | [Test](../acceptance/tests/test_cadsr.py#L108) |
-| A fixture-published registry release is returned as published with its identity. | 1 | [`resolve_registry_release-1`](specification.md#requirement-resolve_registry_release-1) | [Test](../acceptance/tests/test_cadsr.py#L728) |
-| Published-release content requests carry that release and retain its identity and date in provenance. | 1 | [`X-21`](specification.md#requirement-X-21) | [Test](../acceptance/tests/test_cadsr.py#L742) |
-| A missing release is refused even when the registry publishes other releases. | 1 | [`X-21`](specification.md#requirement-X-21) | [Test](../acceptance/tests/test_cadsr.py#L764) |
-| A registry continuation token cannot be used with a different release. | 2 | [`X-17`](specification.md#requirement-X-17) | [Test](../acceptance/tests/test_cadsr.py#L777) |
+| Registry status uses the export's reported date and distribution without claiming a published release. | 1 | [`resolve_registry_release-1`](specification.md#requirement-resolve_registry_release-1) | [Test](../acceptance/tests/test_cadsr.py#L110) |
+| A fixture-published registry release is returned as published with its identity. | 1 | [`resolve_registry_release-1`](specification.md#requirement-resolve_registry_release-1) | [Test](../acceptance/tests/test_cadsr.py#L746) |
+| Published-release content requests carry that release and retain its identity and date in provenance. | 1 | [`X-21`](specification.md#requirement-X-21) | [Test](../acceptance/tests/test_cadsr.py#L760) |
+| A missing release is refused even when the registry publishes other releases. | 1 | [`X-21`](specification.md#requirement-X-21) | [Test](../acceptance/tests/test_cadsr.py#L782) |
+| A registry continuation token cannot be used with a different release. | 2 | [`X-17`](specification.md#requirement-X-17) | [Test](../acceptance/tests/test_cadsr.py#L795) |
 
 <details>
 <summary>Exact executable cases (24)</summary>
 
-- <code>acceptance/tests/test_cadsr.py::test_a_cursor_keeps_the_registry_release_it_was_issued_with[pinned-then-not]</code> — [source](../acceptance/tests/test_cadsr.py#L777)
-- <code>acceptance/tests/test_cadsr.py::test_a_cursor_keeps_the_registry_release_it_was_issued_with[unpinned-then-pinned]</code> — [source](../acceptance/tests/test_cadsr.py#L777)
-- <code>acceptance/tests/test_cadsr.py::test_a_published_registry_release_is_asked_for_and_named_with_its_date</code> — [source](../acceptance/tests/test_cadsr.py#L742)
-- <code>acceptance/tests/test_cadsr.py::test_a_published_registry_release_is_returned</code> — [source](../acceptance/tests/test_cadsr.py#L728)
-- <code>acceptance/tests/test_cadsr.py::test_a_registry_release_cadsr_does_not_list_fails_closed_where_it_lists_some</code> — [source](../acceptance/tests/test_cadsr.py#L764)
-- <code>acceptance/tests/test_cadsr.py::test_without_a_registry_release_the_export_date_stands_for_it</code> — [source](../acceptance/tests/test_cadsr.py#L108)
+- <code>acceptance/tests/test_cadsr.py::test_a_cursor_keeps_the_registry_release_it_was_issued_with[pinned-then-not]</code> — [source](../acceptance/tests/test_cadsr.py#L795)
+- <code>acceptance/tests/test_cadsr.py::test_a_cursor_keeps_the_registry_release_it_was_issued_with[unpinned-then-pinned]</code> — [source](../acceptance/tests/test_cadsr.py#L795)
+- <code>acceptance/tests/test_cadsr.py::test_a_published_registry_release_is_asked_for_and_named_with_its_date</code> — [source](../acceptance/tests/test_cadsr.py#L760)
+- <code>acceptance/tests/test_cadsr.py::test_a_published_registry_release_is_returned</code> — [source](../acceptance/tests/test_cadsr.py#L746)
+- <code>acceptance/tests/test_cadsr.py::test_a_registry_release_cadsr_does_not_list_fails_closed_where_it_lists_some</code> — [source](../acceptance/tests/test_cadsr.py#L782)
+- <code>acceptance/tests/test_cadsr.py::test_without_a_registry_release_the_export_date_stands_for_it</code> — [source](../acceptance/tests/test_cadsr.py#L110)
 - <code>acceptance/tests/test_crosscutting.py::test_a_cadsr_item_without_a_registry_release_names_the_registry_alone[get_code_map]</code> — [source](../acceptance/tests/test_crosscutting.py#L220)
 - <code>acceptance/tests/test_crosscutting.py::test_a_cadsr_item_without_a_registry_release_names_the_registry_alone[get_data_element]</code> — [source](../acceptance/tests/test_crosscutting.py#L220)
 - <code>acceptance/tests/test_crosscutting.py::test_a_cadsr_item_without_a_registry_release_names_the_registry_alone[get_form]</code> — [source](../acceptance/tests/test_crosscutting.py#L220)
@@ -1235,12 +1235,12 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| No terminology offered by the source is left out of the listing. | 1 | [`list_terminologies-1`](specification.md#requirement-list_terminologies-1) | [Test](../acceptance/tests/test_evs.py#L221) |
+| No terminology offered by the source is left out of the listing. | 1 | [`list_terminologies-1`](specification.md#requirement-list_terminologies-1) | [Test](../acceptance/tests/test_evs.py#L236) |
 
 <details>
 <summary>Exact executable cases (1)</summary>
 
-- <code>acceptance/tests/test_evs.py::test_every_terminology_the_platform_serves_is_listed_with_its_current_release</code> — [source](../acceptance/tests/test_evs.py#L221)
+- <code>acceptance/tests/test_evs.py::test_every_terminology_the_platform_serves_is_listed_with_its_current_release</code> — [source](../acceptance/tests/test_evs.py#L236)
 
 </details>
 
@@ -1259,21 +1259,21 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
 | Each supported include choice returns its own section without other optional sections. | 4 | [`get_concept-1`](specification.md#requirement-get_concept-1) | [Test](../acceptance/tests/test_evs.py#L132) |
-| Descendants cannot be requested as a concept include section. | 1 | [`get_concept-2`](specification.md#requirement-get_concept-2) | [Test](../acceptance/tests/test_evs.py#L146) |
+| Descendants cannot be requested as a concept include section. | 1 | [`get_concept-2`](specification.md#requirement-get_concept-2) | [Test](../acceptance/tests/test_evs.py#L155) |
 | Discover the current monthly release, then retrieve a concept whose identity and provenance agree with that release in fixture or live mode. | 1 | [`X-1`](specification.md#requirement-X-1), [`X-7`](specification.md#requirement-X-7), [`get_concept-3`](specification.md#requirement-get_concept-3) | [Test](../acceptance/tests/test_evs.py#L84) |
-| Code, terminology, name and active state are present, with the source's status where supplied. | 2 | [`get_concept-3`](specification.md#requirement-get_concept-3) | [Test](../acceptance/tests/test_evs.py#L156) |
+| Code, terminology, name and active state are present, with the source's status where supplied. | 2 | [`get_concept-3`](specification.md#requirement-get_concept-3) | [Test](../acceptance/tests/test_evs.py#L165) |
 
 <details>
 <summary>Exact executable cases (8)</summary>
 
-- <code>acceptance/tests/test_evs.py::test_a_concept_carries_its_identity_and_the_status_the_platform_publishes[current]</code> — [source](../acceptance/tests/test_evs.py#L156)
-- <code>acceptance/tests/test_evs.py::test_a_concept_carries_its_identity_and_the_status_the_platform_publishes[retired]</code> — [source](../acceptance/tests/test_evs.py#L156)
+- <code>acceptance/tests/test_evs.py::test_a_concept_carries_its_identity_and_the_status_the_platform_publishes[current]</code> — [source](../acceptance/tests/test_evs.py#L165)
+- <code>acceptance/tests/test_evs.py::test_a_concept_carries_its_identity_and_the_status_the_platform_publishes[retired]</code> — [source](../acceptance/tests/test_evs.py#L165)
 - <code>acceptance/tests/test_evs.py::test_a_discovered_release_identifies_the_concept_and_its_provenance</code> — [source](../acceptance/tests/test_evs.py#L84)
 - <code>acceptance/tests/test_evs.py::test_an_include_value_returns_its_section_and_no_other[definitions]</code> — [source](../acceptance/tests/test_evs.py#L132)
 - <code>acceptance/tests/test_evs.py::test_an_include_value_returns_its_section_and_no_other[properties]</code> — [source](../acceptance/tests/test_evs.py#L132)
 - <code>acceptance/tests/test_evs.py::test_an_include_value_returns_its_section_and_no_other[semanticType]</code> — [source](../acceptance/tests/test_evs.py#L132)
 - <code>acceptance/tests/test_evs.py::test_an_include_value_returns_its_section_and_no_other[synonyms]</code> — [source](../acceptance/tests/test_evs.py#L132)
-- <code>acceptance/tests/test_evs.py::test_descendants_is_no_include_value</code> — [source](../acceptance/tests/test_evs.py#L146)
+- <code>acceptance/tests/test_evs.py::test_descendants_is_no_include_value</code> — [source](../acceptance/tests/test_evs.py#L155)
 
 </details>
 
@@ -1291,17 +1291,17 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| A concept batch is obtained in one upstream request. | 1 | [`get_concepts-1`](specification.md#requirement-get_concepts-1) | [Test](../acceptance/tests/test_evs.py#L187) |
-| A silently omitted upstream code is reported in the missing-code list. | 1 | [`get_concepts-2`](specification.md#requirement-get_concepts-2) | [Test](../acceptance/tests/test_evs.py#L200) |
-| Different requested code orders are retained in the batch answer. | 2 | [`get_concepts-3`](specification.md#requirement-get_concepts-3) | [Test](../acceptance/tests/test_evs.py#L211) |
+| A concept batch is obtained in one upstream request. | 1 | [`get_concepts-1`](specification.md#requirement-get_concepts-1) | [Test](../acceptance/tests/test_evs.py#L202) |
+| A silently omitted upstream code is reported in the missing-code list. | 1 | [`get_concepts-2`](specification.md#requirement-get_concepts-2) | [Test](../acceptance/tests/test_evs.py#L215) |
+| Different requested code orders are retained in the batch answer. | 2 | [`get_concepts-3`](specification.md#requirement-get_concepts-3) | [Test](../acceptance/tests/test_evs.py#L226) |
 
 <details>
 <summary>Exact executable cases (4)</summary>
 
-- <code>acceptance/tests/test_evs.py::test_a_batch_comes_back_in_request_order[as-listed]</code> — [source](../acceptance/tests/test_evs.py#L211)
-- <code>acceptance/tests/test_evs.py::test_a_batch_comes_back_in_request_order[reversed]</code> — [source](../acceptance/tests/test_evs.py#L211)
-- <code>acceptance/tests/test_evs.py::test_a_batch_is_one_upstream_request</code> — [source](../acceptance/tests/test_evs.py#L187)
-- <code>acceptance/tests/test_evs.py::test_a_code_the_platform_leaves_out_of_a_batch_is_named_missing</code> — [source](../acceptance/tests/test_evs.py#L200)
+- <code>acceptance/tests/test_evs.py::test_a_batch_comes_back_in_request_order[as-listed]</code> — [source](../acceptance/tests/test_evs.py#L226)
+- <code>acceptance/tests/test_evs.py::test_a_batch_comes_back_in_request_order[reversed]</code> — [source](../acceptance/tests/test_evs.py#L226)
+- <code>acceptance/tests/test_evs.py::test_a_batch_is_one_upstream_request</code> — [source](../acceptance/tests/test_evs.py#L202)
+- <code>acceptance/tests/test_evs.py::test_a_code_the_platform_leaves_out_of_a_batch_is_named_missing</code> — [source](../acceptance/tests/test_evs.py#L215)
 
 </details>
 
@@ -1319,14 +1319,14 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| Lexical search preserves source order, paging, highlights and known total without introducing a score. | 1 | [`search_concepts-1`](specification.md#requirement-search_concepts-1) | [Test](../acceptance/tests/test_evs.py#L280) |
-| Prefix suggestions preserve source order and omit unsupported scores and highlights. | 1 | [`search_concepts-2`](specification.md#requirement-search_concepts-2) | [Test](../acceptance/tests/test_evs.py#L295) |
+| Lexical search preserves source order, paging, highlights and known total without introducing a score. | 1 | [`search_concepts-1`](specification.md#requirement-search_concepts-1) | [Test](../acceptance/tests/test_evs.py#L295) |
+| Prefix suggestions preserve source order and omit unsupported scores and highlights. | 1 | [`search_concepts-2`](specification.md#requirement-search_concepts-2) | [Test](../acceptance/tests/test_evs.py#L310) |
 
 <details>
 <summary>Exact executable cases (2)</summary>
 
-- <code>acceptance/tests/test_evs.py::test_lexical_search_returns_the_platform_s_matches_in_its_order_a_page_at_a_time</code> — [source](../acceptance/tests/test_evs.py#L280)
-- <code>acceptance/tests/test_evs.py::test_typeahead_returns_the_platform_s_prefix_matches_in_its_order</code> — [source](../acceptance/tests/test_evs.py#L295)
+- <code>acceptance/tests/test_evs.py::test_lexical_search_returns_the_platform_s_matches_in_its_order_a_page_at_a_time</code> — [source](../acceptance/tests/test_evs.py#L295)
+- <code>acceptance/tests/test_evs.py::test_typeahead_returns_the_platform_s_prefix_matches_in_its_order</code> — [source](../acceptance/tests/test_evs.py#L310)
 
 </details>
 
@@ -1344,27 +1344,27 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| Both index modes return descending scores and index provenance, with the exactly named concept on the first page and a total reflecting the index set. | 2 | [`search_concepts-3`](specification.md#requirement-search_concepts-3) | [Test](../acceptance/tests/test_evs.py#L499) |
-| The continuation token selects the next ranked items. | 2 | [`X-17`](specification.md#requirement-X-17), [`search_concepts-3`](specification.md#requirement-search_concepts-3) | [Test](../acceptance/tests/test_evs.py#L530) |
-| An index mode unsupported for the selected terminology is an invalid request. | 4 | [`search_concepts-4`](specification.md#requirement-search_concepts-4) | [Test](../acceptance/tests/test_evs.py#L548) |
-| A release different from the active index produces a release-mismatch error. | 2 | [`search_concepts-5`](specification.md#requirement-search_concepts-5) | [Test](../acceptance/tests/test_evs.py#L565) |
-| A missing index produces a capability-unavailable error rather than empty search results. | 2 | [`search_concepts-8`](specification.md#requirement-search_concepts-8) | [Test](../acceptance/tests/test_evs.py#L614) |
+| Both index modes return descending scores and index provenance, with the exactly named concept on the first page and a total reflecting the index set. | 2 | [`search_concepts-3`](specification.md#requirement-search_concepts-3) | [Test](../acceptance/tests/test_evs.py#L514) |
+| The continuation token selects the next ranked items. | 2 | [`X-17`](specification.md#requirement-X-17), [`search_concepts-3`](specification.md#requirement-search_concepts-3) | [Test](../acceptance/tests/test_evs.py#L545) |
+| An index mode unsupported for the selected terminology is an invalid request. | 4 | [`search_concepts-4`](specification.md#requirement-search_concepts-4) | [Test](../acceptance/tests/test_evs.py#L563) |
+| A release different from the active index produces a release-mismatch error. | 2 | [`search_concepts-5`](specification.md#requirement-search_concepts-5) | [Test](../acceptance/tests/test_evs.py#L580) |
+| A missing index produces a capability-unavailable error rather than empty search results. | 2 | [`search_concepts-8`](specification.md#requirement-search_concepts-8) | [Test](../acceptance/tests/test_evs.py#L629) |
 
 <details>
 <summary>Exact executable cases (12)</summary>
 
-- <code>acceptance/tests/test_evs.py::test_an_index_mode_for_a_terminology_without_an_index_is_invalid[as-prepared-hybrid]</code> — [source](../acceptance/tests/test_evs.py#L548)
-- <code>acceptance/tests/test_evs.py::test_an_index_mode_for_a_terminology_without_an_index_is_invalid[as-prepared-semantic]</code> — [source](../acceptance/tests/test_evs.py#L548)
-- <code>acceptance/tests/test_evs.py::test_an_index_mode_for_a_terminology_without_an_index_is_invalid[none-hybrid]</code> — [source](../acceptance/tests/test_evs.py#L548)
-- <code>acceptance/tests/test_evs.py::test_an_index_mode_for_a_terminology_without_an_index_is_invalid[none-semantic]</code> — [source](../acceptance/tests/test_evs.py#L548)
-- <code>acceptance/tests/test_evs.py::test_an_index_mode_without_an_index_is_unavailable[hybrid]</code> — [source](../acceptance/tests/test_evs.py#L614)
-- <code>acceptance/tests/test_evs.py::test_an_index_mode_without_an_index_is_unavailable[semantic]</code> — [source](../acceptance/tests/test_evs.py#L614)
-- <code>acceptance/tests/test_evs.py::test_an_index_search_for_another_release_fails_closed[hybrid]</code> — [source](../acceptance/tests/test_evs.py#L565)
-- <code>acceptance/tests/test_evs.py::test_an_index_search_for_another_release_fails_closed[semantic]</code> — [source](../acceptance/tests/test_evs.py#L565)
-- <code>acceptance/tests/test_evs.py::test_an_index_search_s_cursor_continues_with_its_next_ranked_items[hybrid]</code> — [source](../acceptance/tests/test_evs.py#L530)
-- <code>acceptance/tests/test_evs.py::test_an_index_search_s_cursor_continues_with_its_next_ranked_items[semantic]</code> — [source](../acceptance/tests/test_evs.py#L530)
-- <code>acceptance/tests/test_evs.py::test_index_search_returns_scored_indexed_concepts_and_the_named_one_first_page[hybrid]</code> — [source](../acceptance/tests/test_evs.py#L499)
-- <code>acceptance/tests/test_evs.py::test_index_search_returns_scored_indexed_concepts_and_the_named_one_first_page[semantic]</code> — [source](../acceptance/tests/test_evs.py#L499)
+- <code>acceptance/tests/test_evs.py::test_an_index_mode_for_a_terminology_without_an_index_is_invalid[as-prepared-hybrid]</code> — [source](../acceptance/tests/test_evs.py#L563)
+- <code>acceptance/tests/test_evs.py::test_an_index_mode_for_a_terminology_without_an_index_is_invalid[as-prepared-semantic]</code> — [source](../acceptance/tests/test_evs.py#L563)
+- <code>acceptance/tests/test_evs.py::test_an_index_mode_for_a_terminology_without_an_index_is_invalid[none-hybrid]</code> — [source](../acceptance/tests/test_evs.py#L563)
+- <code>acceptance/tests/test_evs.py::test_an_index_mode_for_a_terminology_without_an_index_is_invalid[none-semantic]</code> — [source](../acceptance/tests/test_evs.py#L563)
+- <code>acceptance/tests/test_evs.py::test_an_index_mode_without_an_index_is_unavailable[hybrid]</code> — [source](../acceptance/tests/test_evs.py#L629)
+- <code>acceptance/tests/test_evs.py::test_an_index_mode_without_an_index_is_unavailable[semantic]</code> — [source](../acceptance/tests/test_evs.py#L629)
+- <code>acceptance/tests/test_evs.py::test_an_index_search_for_another_release_fails_closed[hybrid]</code> — [source](../acceptance/tests/test_evs.py#L580)
+- <code>acceptance/tests/test_evs.py::test_an_index_search_for_another_release_fails_closed[semantic]</code> — [source](../acceptance/tests/test_evs.py#L580)
+- <code>acceptance/tests/test_evs.py::test_an_index_search_s_cursor_continues_with_its_next_ranked_items[hybrid]</code> — [source](../acceptance/tests/test_evs.py#L545)
+- <code>acceptance/tests/test_evs.py::test_an_index_search_s_cursor_continues_with_its_next_ranked_items[semantic]</code> — [source](../acceptance/tests/test_evs.py#L545)
+- <code>acceptance/tests/test_evs.py::test_index_search_returns_scored_indexed_concepts_and_the_named_one_first_page[hybrid]</code> — [source](../acceptance/tests/test_evs.py#L514)
+- <code>acceptance/tests/test_evs.py::test_index_search_returns_scored_indexed_concepts_and_the_named_one_first_page[semantic]</code> — [source](../acceptance/tests/test_evs.py#L514)
 
 </details>
 
@@ -1382,35 +1382,35 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| Ordinary lexical search retains retired entries, including when the default is stated explicitly. | 2 | [`search_concepts-6`](specification.md#requirement-search_concepts-6) | [Test](../acceptance/tests/test_evs.py#L353) |
-| Retired-only lexical search excludes entries not marked retired by the source. | 1 | [`search_concepts-6`](specification.md#requirement-search_concepts-6) | [Test](../acceptance/tests/test_evs.py#L366) |
-| Typeahead supports the same retired-only selection. | 1 | [`search_concepts-6`](specification.md#requirement-search_concepts-6) | [Test](../acceptance/tests/test_evs.py#L387) |
-| Unsupported retirement values, including an exclusion mode, are refused. | 3 | [`search_concepts-6`](specification.md#requirement-search_concepts-6) | [Test](../acceptance/tests/test_evs.py#L399) |
-| A retired status inconsistent with the terminology's concept-status list is rejected. | 1 | [`search_concepts-7`](specification.md#requirement-search_concepts-7) | [Test](../acceptance/tests/test_evs.py#L409) |
-| Retired-only search is refused where the terminology supplies no retired status. | 1 | [`search_concepts-7`](specification.md#requirement-search_concepts-7) | [Test](../acceptance/tests/test_evs.py#L427) |
-| Indexed search retains retired entries by default and can select them alone. | 2 | [`search_concepts-6`](specification.md#requirement-search_concepts-6) | [Test](../acceptance/tests/test_evs.py#L583) |
-| Semantic and hybrid modes reject unsupported retirement values too. | 6 | [`search_concepts-6`](specification.md#requirement-search_concepts-6) | [Test](../acceptance/tests/test_evs.py#L603) |
+| Ordinary lexical search retains retired entries, including when the default is stated explicitly. | 2 | [`search_concepts-6`](specification.md#requirement-search_concepts-6) | [Test](../acceptance/tests/test_evs.py#L368) |
+| Retired-only lexical search excludes entries not marked retired by the source. | 1 | [`search_concepts-6`](specification.md#requirement-search_concepts-6) | [Test](../acceptance/tests/test_evs.py#L381) |
+| Typeahead supports the same retired-only selection. | 1 | [`search_concepts-6`](specification.md#requirement-search_concepts-6) | [Test](../acceptance/tests/test_evs.py#L402) |
+| Unsupported retirement values, including an exclusion mode, are refused. | 3 | [`search_concepts-6`](specification.md#requirement-search_concepts-6) | [Test](../acceptance/tests/test_evs.py#L414) |
+| A retired status inconsistent with the terminology's concept-status list is rejected. | 1 | [`search_concepts-7`](specification.md#requirement-search_concepts-7) | [Test](../acceptance/tests/test_evs.py#L424) |
+| Retired-only search is refused where the terminology supplies no retired status. | 1 | [`search_concepts-7`](specification.md#requirement-search_concepts-7) | [Test](../acceptance/tests/test_evs.py#L442) |
+| Indexed search retains retired entries by default and can select them alone. | 2 | [`search_concepts-6`](specification.md#requirement-search_concepts-6) | [Test](../acceptance/tests/test_evs.py#L598) |
+| Semantic and hybrid modes reject unsupported retirement values too. | 6 | [`search_concepts-6`](specification.md#requirement-search_concepts-6) | [Test](../acceptance/tests/test_evs.py#L618) |
 
 <details>
 <summary>Exact executable cases (17)</summary>
 
-- <code>acceptance/tests/test_evs.py::test_a_retired_value_outside_the_two_is_invalid[ONLY]</code> — [source](../acceptance/tests/test_evs.py#L399)
-- <code>acceptance/tests/test_evs.py::test_a_retired_value_outside_the_two_is_invalid[]</code> — [source](../acceptance/tests/test_evs.py#L399)
-- <code>acceptance/tests/test_evs.py::test_a_retired_value_outside_the_two_is_invalid[exclude]</code> — [source](../acceptance/tests/test_evs.py#L399)
-- <code>acceptance/tests/test_evs.py::test_a_retired_value_outside_the_two_is_invalid_in_index_modes[-hybrid]</code> — [source](../acceptance/tests/test_evs.py#L603)
-- <code>acceptance/tests/test_evs.py::test_a_retired_value_outside_the_two_is_invalid_in_index_modes[-semantic]</code> — [source](../acceptance/tests/test_evs.py#L603)
-- <code>acceptance/tests/test_evs.py::test_a_retired_value_outside_the_two_is_invalid_in_index_modes[ONLY-hybrid]</code> — [source](../acceptance/tests/test_evs.py#L603)
-- <code>acceptance/tests/test_evs.py::test_a_retired_value_outside_the_two_is_invalid_in_index_modes[ONLY-semantic]</code> — [source](../acceptance/tests/test_evs.py#L603)
-- <code>acceptance/tests/test_evs.py::test_a_retired_value_outside_the_two_is_invalid_in_index_modes[exclude-hybrid]</code> — [source](../acceptance/tests/test_evs.py#L603)
-- <code>acceptance/tests/test_evs.py::test_a_retired_value_outside_the_two_is_invalid_in_index_modes[exclude-semantic]</code> — [source](../acceptance/tests/test_evs.py#L603)
-- <code>acceptance/tests/test_evs.py::test_index_search_returns_retired_concepts_with_the_others_or_alone[hybrid]</code> — [source](../acceptance/tests/test_evs.py#L583)
-- <code>acceptance/tests/test_evs.py::test_index_search_returns_retired_concepts_with_the_others_or_alone[semantic]</code> — [source](../acceptance/tests/test_evs.py#L583)
-- <code>acceptance/tests/test_evs.py::test_retired_concepts_are_returned_with_the_others_by_default[default]</code> — [source](../acceptance/tests/test_evs.py#L353)
-- <code>acceptance/tests/test_evs.py::test_retired_concepts_are_returned_with_the_others_by_default[include]</code> — [source](../acceptance/tests/test_evs.py#L353)
-- <code>acceptance/tests/test_evs.py::test_retired_only_returns_the_retired_concepts_alone</code> — [source](../acceptance/tests/test_evs.py#L366)
-- <code>acceptance/tests/test_evs.py::test_retired_only_where_the_listing_names_no_retired_status_is_invalid</code> — [source](../acceptance/tests/test_evs.py#L427)
-- <code>acceptance/tests/test_evs.py::test_retired_only_where_the_status_is_none_the_search_selects_is_invalid</code> — [source](../acceptance/tests/test_evs.py#L409)
-- <code>acceptance/tests/test_evs.py::test_typeahead_takes_retired_only_as_lexical_search_does</code> — [source](../acceptance/tests/test_evs.py#L387)
+- <code>acceptance/tests/test_evs.py::test_a_retired_value_outside_the_two_is_invalid[ONLY]</code> — [source](../acceptance/tests/test_evs.py#L414)
+- <code>acceptance/tests/test_evs.py::test_a_retired_value_outside_the_two_is_invalid[]</code> — [source](../acceptance/tests/test_evs.py#L414)
+- <code>acceptance/tests/test_evs.py::test_a_retired_value_outside_the_two_is_invalid[exclude]</code> — [source](../acceptance/tests/test_evs.py#L414)
+- <code>acceptance/tests/test_evs.py::test_a_retired_value_outside_the_two_is_invalid_in_index_modes[-hybrid]</code> — [source](../acceptance/tests/test_evs.py#L618)
+- <code>acceptance/tests/test_evs.py::test_a_retired_value_outside_the_two_is_invalid_in_index_modes[-semantic]</code> — [source](../acceptance/tests/test_evs.py#L618)
+- <code>acceptance/tests/test_evs.py::test_a_retired_value_outside_the_two_is_invalid_in_index_modes[ONLY-hybrid]</code> — [source](../acceptance/tests/test_evs.py#L618)
+- <code>acceptance/tests/test_evs.py::test_a_retired_value_outside_the_two_is_invalid_in_index_modes[ONLY-semantic]</code> — [source](../acceptance/tests/test_evs.py#L618)
+- <code>acceptance/tests/test_evs.py::test_a_retired_value_outside_the_two_is_invalid_in_index_modes[exclude-hybrid]</code> — [source](../acceptance/tests/test_evs.py#L618)
+- <code>acceptance/tests/test_evs.py::test_a_retired_value_outside_the_two_is_invalid_in_index_modes[exclude-semantic]</code> — [source](../acceptance/tests/test_evs.py#L618)
+- <code>acceptance/tests/test_evs.py::test_index_search_returns_retired_concepts_with_the_others_or_alone[hybrid]</code> — [source](../acceptance/tests/test_evs.py#L598)
+- <code>acceptance/tests/test_evs.py::test_index_search_returns_retired_concepts_with_the_others_or_alone[semantic]</code> — [source](../acceptance/tests/test_evs.py#L598)
+- <code>acceptance/tests/test_evs.py::test_retired_concepts_are_returned_with_the_others_by_default[default]</code> — [source](../acceptance/tests/test_evs.py#L368)
+- <code>acceptance/tests/test_evs.py::test_retired_concepts_are_returned_with_the_others_by_default[include]</code> — [source](../acceptance/tests/test_evs.py#L368)
+- <code>acceptance/tests/test_evs.py::test_retired_only_returns_the_retired_concepts_alone</code> — [source](../acceptance/tests/test_evs.py#L381)
+- <code>acceptance/tests/test_evs.py::test_retired_only_where_the_listing_names_no_retired_status_is_invalid</code> — [source](../acceptance/tests/test_evs.py#L442)
+- <code>acceptance/tests/test_evs.py::test_retired_only_where_the_status_is_none_the_search_selects_is_invalid</code> — [source](../acceptance/tests/test_evs.py#L424)
+- <code>acceptance/tests/test_evs.py::test_typeahead_takes_retired_only_as_lexical_search_does</code> — [source](../acceptance/tests/test_evs.py#L402)
 
 </details>
 
@@ -1428,16 +1428,16 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| Excessive depth is capped; deeper nodes are absent and continuation beyond the cap is reported as depth truncation. | 1 | [`get_concept_hierarchy-1`](specification.md#requirement-get_concept_hierarchy-1) | [Test](../acceptance/tests/test_evs.py#L757) |
-| Every supplied path to the root is returned in the source's code order. | 1 | [`get_concept_hierarchy-2`](specification.md#requirement-get_concept_hierarchy-2) | [Test](../acceptance/tests/test_evs.py#L775) |
-| Hierarchy continuation pages reconstruct the source listing without duplicate concepts. | 1 | [`get_concept_hierarchy-3`](specification.md#requirement-get_concept_hierarchy-3) | [Test](../acceptance/tests/test_evs.py#L790) |
+| Excessive depth is capped; deeper nodes are absent and continuation beyond the cap is reported as depth truncation. | 1 | [`get_concept_hierarchy-1`](specification.md#requirement-get_concept_hierarchy-1) | [Test](../acceptance/tests/test_evs.py#L772) |
+| Paths preserve recorded source order in fixture mode; live paths start at the requested concept and agree with the returned nodes and release. | 1 | [`get_concept_hierarchy-2`](specification.md#requirement-get_concept_hierarchy-2) | [Test](../acceptance/tests/test_evs.py#L790) |
+| Hierarchy continuation pages reconstruct the source listing without duplicate concepts. | 1 | [`get_concept_hierarchy-3`](specification.md#requirement-get_concept_hierarchy-3) | [Test](../acceptance/tests/test_evs.py#L809) |
 
 <details>
 <summary>Exact executable cases (3)</summary>
 
-- <code>acceptance/tests/test_evs.py::test_a_depth_above_the_maximum_is_applied_as_the_maximum_and_reported</code> — [source](../acceptance/tests/test_evs.py#L757)
-- <code>acceptance/tests/test_evs.py::test_limit_is_a_page_the_cursor_continues_to_the_end</code> — [source](../acceptance/tests/test_evs.py#L790)
-- <code>acceptance/tests/test_evs.py::test_paths_to_root_are_the_platform_s_paths_in_its_order</code> — [source](../acceptance/tests/test_evs.py#L775)
+- <code>acceptance/tests/test_evs.py::test_a_depth_above_the_maximum_is_applied_as_the_maximum_and_reported</code> — [source](../acceptance/tests/test_evs.py#L772)
+- <code>acceptance/tests/test_evs.py::test_limit_is_a_page_the_cursor_continues_to_the_end</code> — [source](../acceptance/tests/test_evs.py#L809)
+- <code>acceptance/tests/test_evs.py::test_paths_to_root_are_the_platform_s_paths_in_its_order</code> — [source](../acceptance/tests/test_evs.py#L790)
 
 </details>
 
@@ -1455,18 +1455,18 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| Count and offset select the correct ordered page even when the source ignores them. | 3 | [`expand_value_set-1`](specification.md#requirement-expand_value_set-1) | [Test](../acceptance/tests/test_evs.py#L655) |
-| Active-only removes inactive members and adjusts the total; default and false selections retain them with their status. | 3 | [`expand_value_set-2`](specification.md#requirement-expand_value_set-2) | [Test](../acceptance/tests/test_evs.py#L677) |
+| Count and offset select the correct ordered page even when the source ignores them. | 3 | [`expand_value_set-1`](specification.md#requirement-expand_value_set-1) | [Test](../acceptance/tests/test_evs.py#L670) |
+| Active-only removes inactive members and adjusts the total; default and false selections retain them with their status. | 3 | [`expand_value_set-2`](specification.md#requirement-expand_value_set-2) | [Test](../acceptance/tests/test_evs.py#L692) |
 
 <details>
 <summary>Exact executable cases (6)</summary>
 
-- <code>acceptance/tests/test_evs.py::test_active_only_leaves_out_the_members_marked_inactive[default]</code> — [source](../acceptance/tests/test_evs.py#L677)
-- <code>acceptance/tests/test_evs.py::test_active_only_leaves_out_the_members_marked_inactive[false]</code> — [source](../acceptance/tests/test_evs.py#L677)
-- <code>acceptance/tests/test_evs.py::test_active_only_leaves_out_the_members_marked_inactive[true]</code> — [source](../acceptance/tests/test_evs.py#L677)
-- <code>acceptance/tests/test_evs.py::test_count_and_offset_select_the_members_and_total_counts_them_all[first]</code> — [source](../acceptance/tests/test_evs.py#L655)
-- <code>acceptance/tests/test_evs.py::test_count_and_offset_select_the_members_and_total_counts_them_all[last]</code> — [source](../acceptance/tests/test_evs.py#L655)
-- <code>acceptance/tests/test_evs.py::test_count_and_offset_select_the_members_and_total_counts_them_all[middle]</code> — [source](../acceptance/tests/test_evs.py#L655)
+- <code>acceptance/tests/test_evs.py::test_active_only_leaves_out_the_members_marked_inactive[default]</code> — [source](../acceptance/tests/test_evs.py#L692)
+- <code>acceptance/tests/test_evs.py::test_active_only_leaves_out_the_members_marked_inactive[false]</code> — [source](../acceptance/tests/test_evs.py#L692)
+- <code>acceptance/tests/test_evs.py::test_active_only_leaves_out_the_members_marked_inactive[true]</code> — [source](../acceptance/tests/test_evs.py#L692)
+- <code>acceptance/tests/test_evs.py::test_count_and_offset_select_the_members_and_total_counts_them_all[first]</code> — [source](../acceptance/tests/test_evs.py#L670)
+- <code>acceptance/tests/test_evs.py::test_count_and_offset_select_the_members_and_total_counts_them_all[last]</code> — [source](../acceptance/tests/test_evs.py#L670)
+- <code>acceptance/tests/test_evs.py::test_count_and_offset_select_the_members_and_total_counts_them_all[middle]</code> — [source](../acceptance/tests/test_evs.py#L670)
 
 </details>
 
@@ -1484,28 +1484,28 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| A busy kind is reported as truncated while other requested kinds still contribute results. | 4 | [`get_concept_neighborhood-1`](specification.md#requirement-get_concept_neighborhood-1) | [Test](../acceptance/tests/test_evs.py#L811) |
-| A supplied per-kind allowance limits the nodes that kind contributes and records its truncation. | 2 | [`get_concept_neighborhood-6`](specification.md#requirement-get_concept_neighborhood-6) | [Test](../acceptance/tests/test_evs.py#L841) |
-| A failed call's reported attempts agree with actual requests, including retries; this case does not prove every internal request-budget boundary. | 2 | [`get_concept_neighborhood-5`](specification.md#requirement-get_concept_neighborhood-5) | [Test](../acceptance/tests/test_evs.py#L885) |
-| Renaming a relationship cannot change its negative or positive classification. | 1 | [`get_concept_neighborhood-2`](specification.md#requirement-get_concept_neighborhood-2) | [Test](../acceptance/tests/test_evs.py#L913) |
-| Negative edges remain visible and marked, but traversal beyond them requires explicit inclusion. | 2 | [`get_concept_neighborhood-3`](specification.md#requirement-get_concept_neighborhood-3) | [Test](../acceptance/tests/test_evs.py#L958) |
-| An excessive node limit is capped and the result reports the applied maximum. | 1 | [`get_concept_neighborhood-4`](specification.md#requirement-get_concept_neighborhood-4) | [Test](../acceptance/tests/test_evs.py#L986) |
+| A busy kind is reported as truncated while other requested kinds still contribute results. | 4 | [`get_concept_neighborhood-1`](specification.md#requirement-get_concept_neighborhood-1) | [Test](../acceptance/tests/test_evs.py#L830) |
+| A supplied per-kind allowance limits the nodes that kind contributes and records its truncation. | 2 | [`get_concept_neighborhood-6`](specification.md#requirement-get_concept_neighborhood-6) | [Test](../acceptance/tests/test_evs.py#L860) |
+| A failed call's reported attempts agree with actual requests, including retries; this case does not prove every internal request-budget boundary. | 2 | [`get_concept_neighborhood-5`](specification.md#requirement-get_concept_neighborhood-5) | [Test](../acceptance/tests/test_evs.py#L904) |
+| Renaming a relationship cannot change its negative or positive classification. | 1 | [`get_concept_neighborhood-2`](specification.md#requirement-get_concept_neighborhood-2) | [Test](../acceptance/tests/test_evs.py#L932) |
+| Negative edges remain visible and marked, but traversal beyond them requires explicit inclusion. | 2 | [`get_concept_neighborhood-3`](specification.md#requirement-get_concept_neighborhood-3) | [Test](../acceptance/tests/test_evs.py#L977) |
+| An excessive node limit is capped and the result reports the applied maximum. | 1 | [`get_concept_neighborhood-4`](specification.md#requirement-get_concept_neighborhood-4) | [Test](../acceptance/tests/test_evs.py#L1005) |
 
 <details>
 <summary>Exact executable cases (12)</summary>
 
-- <code>acceptance/tests/test_evs.py::test_a_kind_that_reaches_its_budget_starves_no_other[in-order-associations]</code> — [source](../acceptance/tests/test_evs.py#L811)
-- <code>acceptance/tests/test_evs.py::test_a_kind_that_reaches_its_budget_starves_no_other[in-order-roles]</code> — [source](../acceptance/tests/test_evs.py#L811)
-- <code>acceptance/tests/test_evs.py::test_a_kind_that_reaches_its_budget_starves_no_other[reversed-associations]</code> — [source](../acceptance/tests/test_evs.py#L811)
-- <code>acceptance/tests/test_evs.py::test_a_kind_that_reaches_its_budget_starves_no_other[reversed-roles]</code> — [source](../acceptance/tests/test_evs.py#L811)
-- <code>acceptance/tests/test_evs.py::test_a_node_limit_above_the_maximum_is_applied_as_the_maximum</code> — [source](../acceptance/tests/test_evs.py#L986)
-- <code>acceptance/tests/test_evs.py::test_budget_per_kind_bounds_the_nodes_each_kind_adds[associations]</code> — [source](../acceptance/tests/test_evs.py#L841)
-- <code>acceptance/tests/test_evs.py::test_budget_per_kind_bounds_the_nodes_each_kind_adds[roles]</code> — [source](../acceptance/tests/test_evs.py#L841)
-- <code>acceptance/tests/test_evs.py::test_negative_edges_are_returned_marked_and_followed_only_when_included[default]</code> — [source](../acceptance/tests/test_evs.py#L958)
-- <code>acceptance/tests/test_evs.py::test_negative_edges_are_returned_marked_and_followed_only_when_included[included]</code> — [source](../acceptance/tests/test_evs.py#L958)
-- <code>acceptance/tests/test_evs.py::test_polarity_follows_the_relationship_code_not_its_name</code> — [source](../acceptance/tests/test_evs.py#L913)
-- <code>acceptance/tests/test_evs.py::test_the_attempts_a_failed_call_reports_are_the_requests_it_made[get_concept_hierarchy]</code> — [source](../acceptance/tests/test_evs.py#L885)
-- <code>acceptance/tests/test_evs.py::test_the_attempts_a_failed_call_reports_are_the_requests_it_made[get_concept_neighborhood]</code> — [source](../acceptance/tests/test_evs.py#L885)
+- <code>acceptance/tests/test_evs.py::test_a_kind_that_reaches_its_budget_starves_no_other[in-order-associations]</code> — [source](../acceptance/tests/test_evs.py#L830)
+- <code>acceptance/tests/test_evs.py::test_a_kind_that_reaches_its_budget_starves_no_other[in-order-roles]</code> — [source](../acceptance/tests/test_evs.py#L830)
+- <code>acceptance/tests/test_evs.py::test_a_kind_that_reaches_its_budget_starves_no_other[reversed-associations]</code> — [source](../acceptance/tests/test_evs.py#L830)
+- <code>acceptance/tests/test_evs.py::test_a_kind_that_reaches_its_budget_starves_no_other[reversed-roles]</code> — [source](../acceptance/tests/test_evs.py#L830)
+- <code>acceptance/tests/test_evs.py::test_a_node_limit_above_the_maximum_is_applied_as_the_maximum</code> — [source](../acceptance/tests/test_evs.py#L1005)
+- <code>acceptance/tests/test_evs.py::test_budget_per_kind_bounds_the_nodes_each_kind_adds[associations]</code> — [source](../acceptance/tests/test_evs.py#L860)
+- <code>acceptance/tests/test_evs.py::test_budget_per_kind_bounds_the_nodes_each_kind_adds[roles]</code> — [source](../acceptance/tests/test_evs.py#L860)
+- <code>acceptance/tests/test_evs.py::test_negative_edges_are_returned_marked_and_followed_only_when_included[default]</code> — [source](../acceptance/tests/test_evs.py#L977)
+- <code>acceptance/tests/test_evs.py::test_negative_edges_are_returned_marked_and_followed_only_when_included[included]</code> — [source](../acceptance/tests/test_evs.py#L977)
+- <code>acceptance/tests/test_evs.py::test_polarity_follows_the_relationship_code_not_its_name</code> — [source](../acceptance/tests/test_evs.py#L932)
+- <code>acceptance/tests/test_evs.py::test_the_attempts_a_failed_call_reports_are_the_requests_it_made[get_concept_hierarchy]</code> — [source](../acceptance/tests/test_evs.py#L904)
+- <code>acceptance/tests/test_evs.py::test_the_attempts_a_failed_call_reports_are_the_requests_it_made[get_concept_neighborhood]</code> — [source](../acceptance/tests/test_evs.py#L904)
 
 </details>
 
@@ -1523,16 +1523,16 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| Subsets are the concept's published subset associations in source order. | 1 | [`get_concept_subsets-1`](specification.md#requirement-get_concept_subsets-1) | [Test](../acceptance/tests/test_evs.py#L1006) |
-| Mappings are passed through unchanged in source order. | 1 | [`get_concept_mappings-1`](specification.md#requirement-get_concept_mappings-1) | [Test](../acceptance/tests/test_evs.py#L1033) |
-| Target-terminology filtering uses exact matching, including case. | 1 | [`get_concept_mappings-2`](specification.md#requirement-get_concept_mappings-2) | [Test](../acceptance/tests/test_evs.py#L1043) |
+| Subsets are the concept's published subset associations in source order. | 1 | [`get_concept_subsets-1`](specification.md#requirement-get_concept_subsets-1) | [Test](../acceptance/tests/test_evs.py#L1025) |
+| Mappings preserve recorded source content and order in fixture mode; live mappings carry target identity, relation and matching release provenance. | 1 | [`get_concept_mappings-1`](specification.md#requirement-get_concept_mappings-1) | [Test](../acceptance/tests/test_evs.py#L1052) |
+| Target-terminology filtering uses exact matching, including case. | 1 | [`get_concept_mappings-2`](specification.md#requirement-get_concept_mappings-2) | [Test](../acceptance/tests/test_evs.py#L1072) |
 
 <details>
 <summary>Exact executable cases (3)</summary>
 
-- <code>acceptance/tests/test_evs.py::test_target_terminology_keeps_the_maps_with_that_target_and_no_other</code> — [source](../acceptance/tests/test_evs.py#L1043)
-- <code>acceptance/tests/test_evs.py::test_the_mappings_are_the_concept_s_maps_unchanged_in_order</code> — [source](../acceptance/tests/test_evs.py#L1033)
-- <code>acceptance/tests/test_evs.py::test_the_subsets_are_the_concept_s_subset_associations_in_order</code> — [source](../acceptance/tests/test_evs.py#L1006)
+- <code>acceptance/tests/test_evs.py::test_target_terminology_keeps_the_maps_with_that_target_and_no_other</code> — [source](../acceptance/tests/test_evs.py#L1072)
+- <code>acceptance/tests/test_evs.py::test_the_mappings_are_the_concept_s_maps_unchanged_in_order</code> — [source](../acceptance/tests/test_evs.py#L1052)
+- <code>acceptance/tests/test_evs.py::test_the_subsets_are_the_concept_s_subset_associations_in_order</code> — [source](../acceptance/tests/test_evs.py#L1025)
 
 </details>
 
@@ -1550,15 +1550,15 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| Retired entries retain their status and exactly the replacements named by the source. | 2 | [`resolve_retired_code-1`](specification.md#requirement-resolve_retired_code-1) | [Test](../acceptance/tests/test_evs.py#L1094) |
-| Active entries report their status with no replacement. | 1 | [`resolve_retired_code-2`](specification.md#requirement-resolve_retired_code-2) | [Test](../acceptance/tests/test_evs.py#L1122) |
+| Retired entries retain their status and exactly the replacements named by the source. | 2 | [`resolve_retired_code-1`](specification.md#requirement-resolve_retired_code-1) | [Test](../acceptance/tests/test_evs.py#L1123) |
+| Active entries report their status with no replacement. | 1 | [`resolve_retired_code-2`](specification.md#requirement-resolve_retired_code-2) | [Test](../acceptance/tests/test_evs.py#L1151) |
 
 <details>
 <summary>Exact executable cases (3)</summary>
 
-- <code>acceptance/tests/test_evs.py::test_a_retired_code_is_inactive_with_its_status_and_replacements[replaced]</code> — [source](../acceptance/tests/test_evs.py#L1094)
-- <code>acceptance/tests/test_evs.py::test_a_retired_code_is_inactive_with_its_status_and_replacements[unreplaced]</code> — [source](../acceptance/tests/test_evs.py#L1094)
-- <code>acceptance/tests/test_evs.py::test_an_active_code_is_active_with_its_status_and_no_replacement</code> — [source](../acceptance/tests/test_evs.py#L1122)
+- <code>acceptance/tests/test_evs.py::test_a_retired_code_is_inactive_with_its_status_and_replacements[replaced]</code> — [source](../acceptance/tests/test_evs.py#L1123)
+- <code>acceptance/tests/test_evs.py::test_a_retired_code_is_inactive_with_its_status_and_replacements[unreplaced]</code> — [source](../acceptance/tests/test_evs.py#L1123)
+- <code>acceptance/tests/test_evs.py::test_an_active_code_is_active_with_its_status_and_no_replacement</code> — [source](../acceptance/tests/test_evs.py#L1151)
 
 </details>
 
@@ -1576,17 +1576,17 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| Every role and association is listed with code, name and kind. | 1 | [`list_relationships-1`](specification.md#requirement-list_relationships-1) | [Test](../acceptance/tests/test_evs.py#L1145) |
-| Catalogue polarity remains correct when source relationship names change. | 1 | [`list_relationships-2`](specification.md#requirement-list_relationships-2) | [Test](../acceptance/tests/test_evs.py#L1165) |
-| Catalogue and neighbourhood calls reject a missing exclusion code and name what is absent. | 2 | [`list_relationships-3`](specification.md#requirement-list_relationships-3) | [Test](../acceptance/tests/test_evs.py#L1189) |
+| The recorded catalogue matches exactly in fixture mode; live entries carry code, name, kind, polarity and matching release provenance. | 1 | [`list_relationships-1`](specification.md#requirement-list_relationships-1) | [Test](../acceptance/tests/test_evs.py#L1174) |
+| Catalogue polarity remains correct when source relationship names change. | 1 | [`list_relationships-2`](specification.md#requirement-list_relationships-2) | [Test](../acceptance/tests/test_evs.py#L1202) |
+| Catalogue and neighbourhood calls reject a missing exclusion code and name what is absent. | 2 | [`list_relationships-3`](specification.md#requirement-list_relationships-3) | [Test](../acceptance/tests/test_evs.py#L1226) |
 
 <details>
 <summary>Exact executable cases (4)</summary>
 
-- <code>acceptance/tests/test_evs.py::test_a_catalogue_without_a_code_of_the_exclusion_set_fails_closed[get_concept_neighborhood]</code> — [source](../acceptance/tests/test_evs.py#L1189)
-- <code>acceptance/tests/test_evs.py::test_a_catalogue_without_a_code_of_the_exclusion_set_fails_closed[list_relationships]</code> — [source](../acceptance/tests/test_evs.py#L1189)
-- <code>acceptance/tests/test_evs.py::test_a_relationship_s_polarity_follows_its_code_not_its_name</code> — [source](../acceptance/tests/test_evs.py#L1165)
-- <code>acceptance/tests/test_evs.py::test_every_relationship_of_the_catalogue_is_listed_by_code_name_and_kind</code> — [source](../acceptance/tests/test_evs.py#L1145)
+- <code>acceptance/tests/test_evs.py::test_a_catalogue_without_a_code_of_the_exclusion_set_fails_closed[get_concept_neighborhood]</code> — [source](../acceptance/tests/test_evs.py#L1226)
+- <code>acceptance/tests/test_evs.py::test_a_catalogue_without_a_code_of_the_exclusion_set_fails_closed[list_relationships]</code> — [source](../acceptance/tests/test_evs.py#L1226)
+- <code>acceptance/tests/test_evs.py::test_a_relationship_s_polarity_follows_its_code_not_its_name</code> — [source](../acceptance/tests/test_evs.py#L1202)
+- <code>acceptance/tests/test_evs.py::test_every_relationship_of_the_catalogue_is_listed_by_code_name_and_kind</code> — [source](../acceptance/tests/test_evs.py#L1174)
 
 </details>
 
@@ -1604,27 +1604,27 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| The base record contains its own fields, selected version and source statuses without unrequested nested sections. | 2 | [`get_data_element-1`](specification.md#requirement-get_data_element-1) | [Test](../acceptance/tests/test_cadsr.py#L129) |
-| Each optional section matches the source and does not add other sections. | 5 | [`get_data_element-1`](specification.md#requirement-get_data_element-1) | [Test](../acceptance/tests/test_cadsr.py#L222) |
-| The fixture question Sex of a Person resolves to its unique full data element. | 1 | [`get_data_element-2`](specification.md#requirement-get_data_element-2) | [Test](../acceptance/tests/test_cadsr.py#L240) |
-| The fixture question Date of birth produces an ambiguity error naming candidate public identifiers. | 1 | [`get_data_element-2`](specification.md#requirement-get_data_element-2) | [Test](../acceptance/tests/test_cadsr.py#L254) |
-| Unsupported lookup by long name reports capability unavailable. | 1 | [`get_data_element-2`](specification.md#requirement-get_data_element-2) | [Test](../acceptance/tests/test_cadsr.py#L272) |
-| Question text with no matching data element reports not found. | 1 | [`get_data_element-2`](specification.md#requirement-get_data_element-2) | [Test](../acceptance/tests/test_cadsr.py#L521) |
+| The base record contains its own fields, selected version and source statuses without unrequested nested sections. | 2 | [`get_data_element-1`](specification.md#requirement-get_data_element-1) | [Test](../acceptance/tests/test_cadsr.py#L131) |
+| Each optional section matches recorded content in fixture mode, retains its live shape and registry provenance, and does not add other sections. | 5 | [`get_data_element-1`](specification.md#requirement-get_data_element-1) | [Test](../acceptance/tests/test_cadsr.py#L230) |
+| The fixture question Sex of a Person resolves to its unique full data element. | 1 | [`get_data_element-2`](specification.md#requirement-get_data_element-2) | [Test](../acceptance/tests/test_cadsr.py#L258) |
+| The fixture question Date of birth produces an ambiguity error naming candidate public identifiers. | 1 | [`get_data_element-2`](specification.md#requirement-get_data_element-2) | [Test](../acceptance/tests/test_cadsr.py#L272) |
+| Unsupported lookup by long name reports capability unavailable. | 1 | [`get_data_element-2`](specification.md#requirement-get_data_element-2) | [Test](../acceptance/tests/test_cadsr.py#L290) |
+| Question text with no matching data element reports not found. | 1 | [`get_data_element-2`](specification.md#requirement-get_data_element-2) | [Test](../acceptance/tests/test_cadsr.py#L539) |
 
 <details>
 <summary>Exact executable cases (11)</summary>
 
-- <code>acceptance/tests/test_cadsr.py::test_a_data_element_is_its_own_fields_alone_with_its_version_and_statuses[latest]</code> — [source](../acceptance/tests/test_cadsr.py#L129)
-- <code>acceptance/tests/test_cadsr.py::test_a_data_element_is_its_own_fields_alone_with_its_version_and_statuses[version-1]</code> — [source](../acceptance/tests/test_cadsr.py#L129)
-- <code>acceptance/tests/test_cadsr.py::test_a_long_name_lookup_is_unavailable_never_empty</code> — [source](../acceptance/tests/test_cadsr.py#L272)
-- <code>acceptance/tests/test_cadsr.py::test_a_question_text_no_data_element_has_is_not_found</code> — [source](../acceptance/tests/test_cadsr.py#L521)
-- <code>acceptance/tests/test_cadsr.py::test_a_question_text_one_data_element_has_finds_it</code> — [source](../acceptance/tests/test_cadsr.py#L240)
-- <code>acceptance/tests/test_cadsr.py::test_a_question_text_several_have_is_an_invalid_request_naming_them</code> — [source](../acceptance/tests/test_cadsr.py#L254)
-- <code>acceptance/tests/test_cadsr.py::test_each_include_returns_its_section_as_the_platform_gives_it[alternateNames]</code> — [source](../acceptance/tests/test_cadsr.py#L222)
-- <code>acceptance/tests/test_cadsr.py::test_each_include_returns_its_section_as_the_platform_gives_it[classificationSchemes]</code> — [source](../acceptance/tests/test_cadsr.py#L222)
-- <code>acceptance/tests/test_cadsr.py::test_each_include_returns_its_section_as_the_platform_gives_it[conceptAssociations]</code> — [source](../acceptance/tests/test_cadsr.py#L222)
-- <code>acceptance/tests/test_cadsr.py::test_each_include_returns_its_section_as_the_platform_gives_it[permissibleValues]</code> — [source](../acceptance/tests/test_cadsr.py#L222)
-- <code>acceptance/tests/test_cadsr.py::test_each_include_returns_its_section_as_the_platform_gives_it[valueDomain]</code> — [source](../acceptance/tests/test_cadsr.py#L222)
+- <code>acceptance/tests/test_cadsr.py::test_a_data_element_is_its_own_fields_alone_with_its_version_and_statuses[latest]</code> — [source](../acceptance/tests/test_cadsr.py#L131)
+- <code>acceptance/tests/test_cadsr.py::test_a_data_element_is_its_own_fields_alone_with_its_version_and_statuses[version-1]</code> — [source](../acceptance/tests/test_cadsr.py#L131)
+- <code>acceptance/tests/test_cadsr.py::test_a_long_name_lookup_is_unavailable_never_empty</code> — [source](../acceptance/tests/test_cadsr.py#L290)
+- <code>acceptance/tests/test_cadsr.py::test_a_question_text_no_data_element_has_is_not_found</code> — [source](../acceptance/tests/test_cadsr.py#L539)
+- <code>acceptance/tests/test_cadsr.py::test_a_question_text_one_data_element_has_finds_it</code> — [source](../acceptance/tests/test_cadsr.py#L258)
+- <code>acceptance/tests/test_cadsr.py::test_a_question_text_several_have_is_an_invalid_request_naming_them</code> — [source](../acceptance/tests/test_cadsr.py#L272)
+- <code>acceptance/tests/test_cadsr.py::test_each_include_returns_its_section_as_the_platform_gives_it[alternateNames]</code> — [source](../acceptance/tests/test_cadsr.py#L230)
+- <code>acceptance/tests/test_cadsr.py::test_each_include_returns_its_section_as_the_platform_gives_it[classificationSchemes]</code> — [source](../acceptance/tests/test_cadsr.py#L230)
+- <code>acceptance/tests/test_cadsr.py::test_each_include_returns_its_section_as_the_platform_gives_it[conceptAssociations]</code> — [source](../acceptance/tests/test_cadsr.py#L230)
+- <code>acceptance/tests/test_cadsr.py::test_each_include_returns_its_section_as_the_platform_gives_it[permissibleValues]</code> — [source](../acceptance/tests/test_cadsr.py#L230)
+- <code>acceptance/tests/test_cadsr.py::test_each_include_returns_its_section_as_the_platform_gives_it[valueDomain]</code> — [source](../acceptance/tests/test_cadsr.py#L230)
 
 </details>
 
@@ -1642,15 +1642,15 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| Unsupported classification, permissible-value lookup and search options return the required unavailable-capability response. | 4 | [`get_permissible_value-1`](specification.md#requirement-get_permissible_value-1), [`list_contexts-1`](specification.md#requirement-list_contexts-1), [`search_data_elements-1`](specification.md#requirement-search_data_elements-1) | [Test](../acceptance/tests/test_cadsr.py#L513) |
+| Unsupported classification, permissible-value lookup and search options return the required unavailable-capability response. | 4 | [`get_permissible_value-1`](specification.md#requirement-get_permissible_value-1), [`list_contexts-1`](specification.md#requirement-list_contexts-1), [`search_data_elements-1`](specification.md#requirement-search_data_elements-1) | [Test](../acceptance/tests/test_cadsr.py#L531) |
 
 <details>
 <summary>Exact executable cases (4)</summary>
 
-- <code>acceptance/tests/test_cadsr.py::test_a_capability_the_platform_lacks_is_unavailable_never_empty[classification-schemes]</code> — [source](../acceptance/tests/test_cadsr.py#L513)
-- <code>acceptance/tests/test_cadsr.py::test_a_capability_the_platform_lacks_is_unavailable_never_empty[permissible-value]</code> — [source](../acceptance/tests/test_cadsr.py#L513)
-- <code>acceptance/tests/test_cadsr.py::test_a_capability_the_platform_lacks_is_unavailable_never_empty[search-hybrid]</code> — [source](../acceptance/tests/test_cadsr.py#L513)
-- <code>acceptance/tests/test_cadsr.py::test_a_capability_the_platform_lacks_is_unavailable_never_empty[search-semantic]</code> — [source](../acceptance/tests/test_cadsr.py#L513)
+- <code>acceptance/tests/test_cadsr.py::test_a_capability_the_platform_lacks_is_unavailable_never_empty[classification-schemes]</code> — [source](../acceptance/tests/test_cadsr.py#L531)
+- <code>acceptance/tests/test_cadsr.py::test_a_capability_the_platform_lacks_is_unavailable_never_empty[permissible-value]</code> — [source](../acceptance/tests/test_cadsr.py#L531)
+- <code>acceptance/tests/test_cadsr.py::test_a_capability_the_platform_lacks_is_unavailable_never_empty[search-hybrid]</code> — [source](../acceptance/tests/test_cadsr.py#L531)
+- <code>acceptance/tests/test_cadsr.py::test_a_capability_the_platform_lacks_is_unavailable_never_empty[search-semantic]</code> — [source](../acceptance/tests/test_cadsr.py#L531)
 
 </details>
 
@@ -1668,14 +1668,14 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| A requested page size determines the returned page. | 1 | [`search_data_elements-1`](specification.md#requirement-search_data_elements-1) | [Test](../acceptance/tests/test_cadsr.py#L537) |
-| An upstream-capped search reports its cap and at least one omission without a fabricated total. | 1 | [`search_data_elements-1`](specification.md#requirement-search_data_elements-1) | [Test](../acceptance/tests/test_cadsr.py#L549) |
+| A requested page size determines the returned page. | 1 | [`search_data_elements-1`](specification.md#requirement-search_data_elements-1) | [Test](../acceptance/tests/test_cadsr.py#L555) |
+| An upstream-capped search reports its cap and at least one omission without a fabricated total. | 1 | [`search_data_elements-1`](specification.md#requirement-search_data_elements-1) | [Test](../acceptance/tests/test_cadsr.py#L567) |
 
 <details>
 <summary>Exact executable cases (2)</summary>
 
-- <code>acceptance/tests/test_cadsr.py::test_a_search_s_page_is_the_limit_given</code> — [source](../acceptance/tests/test_cadsr.py#L537)
-- <code>acceptance/tests/test_cadsr.py::test_a_search_the_platform_caps_reports_the_cap_and_no_total</code> — [source](../acceptance/tests/test_cadsr.py#L549)
+- <code>acceptance/tests/test_cadsr.py::test_a_search_s_page_is_the_limit_given</code> — [source](../acceptance/tests/test_cadsr.py#L555)
+- <code>acceptance/tests/test_cadsr.py::test_a_search_the_platform_caps_reports_the_cap_and_no_total</code> — [source](../acceptance/tests/test_cadsr.py#L567)
 
 </details>
 
@@ -1693,29 +1693,29 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| Data-element candidates retain the source's scores and matching rules. | 1 | [`match_data_elements-1`](specification.md#requirement-match_data_elements-1) | [Test](../acceptance/tests/test_cadsr.py#L573) |
-| Each input entity keeps its own ordered candidate list. | 1 | [`match_data_elements-1`](specification.md#requirement-match_data_elements-1) | [Test](../acceptance/tests/test_cadsr.py#L597) |
-| Unsupported tuning options and excessive entity input are refused rather than ignored. | 3 | [`match_data_elements-1`](specification.md#requirement-match_data_elements-1) | [Test](../acceptance/tests/test_cadsr.py#L616) |
-| Each entity returns no more than its requested match limit. | 1 | [`match_data_elements-1`](specification.md#requirement-match_data_elements-1) | [Test](../acceptance/tests/test_cadsr.py#L639) |
-| Both matching operations report a timeout when the fixture response exceeds the matching timeout. | 2 | [`match_data_elements-1`](specification.md#requirement-match_data_elements-1), [`match_value_meanings-1`](specification.md#requirement-match_value_meanings-1) | [Test](../acceptance/tests/test_cadsr.py#L670) |
-| Value-meaning candidates retain source order, rules, item types and concepts, omitting unavailable crosswalks and unsupplied scores. | 1 | [`match_value_meanings-1`](specification.md#requirement-match_value_meanings-1) | [Test](../acceptance/tests/test_cadsr.py#L357) |
-| A value list above the supported maximum is rejected. | 1 | [`match_value_meanings-1`](specification.md#requirement-match_value_meanings-1) | [Test](../acceptance/tests/test_cadsr.py#L381) |
-| A candidate without a source concept omits that optional concept instead of inventing one or inserting a null value. | 1 | [`match_value_meanings-1`](specification.md#requirement-match_value_meanings-1) | [Test](../acceptance/tests/test_cadsr.py#L685) |
+| Data-element candidates retain the source's scores and matching rules. | 1 | [`match_data_elements-1`](specification.md#requirement-match_data_elements-1) | [Test](../acceptance/tests/test_cadsr.py#L591) |
+| Each input entity keeps its own ordered candidate list. | 1 | [`match_data_elements-1`](specification.md#requirement-match_data_elements-1) | [Test](../acceptance/tests/test_cadsr.py#L615) |
+| Unsupported tuning options and excessive entity input are refused rather than ignored. | 3 | [`match_data_elements-1`](specification.md#requirement-match_data_elements-1) | [Test](../acceptance/tests/test_cadsr.py#L634) |
+| Each entity returns no more than its requested match limit. | 1 | [`match_data_elements-1`](specification.md#requirement-match_data_elements-1) | [Test](../acceptance/tests/test_cadsr.py#L657) |
+| Both matching operations report a timeout when the fixture response exceeds the matching timeout. | 2 | [`match_data_elements-1`](specification.md#requirement-match_data_elements-1), [`match_value_meanings-1`](specification.md#requirement-match_value_meanings-1) | [Test](../acceptance/tests/test_cadsr.py#L688) |
+| Value-meaning candidates retain source order, rules, item types and concepts, omitting unavailable crosswalks and unsupplied scores. | 1 | [`match_value_meanings-1`](specification.md#requirement-match_value_meanings-1) | [Test](../acceptance/tests/test_cadsr.py#L375) |
+| A value list above the supported maximum is rejected. | 1 | [`match_value_meanings-1`](specification.md#requirement-match_value_meanings-1) | [Test](../acceptance/tests/test_cadsr.py#L399) |
+| A candidate without a source concept omits that optional concept instead of inventing one or inserting a null value. | 1 | [`match_value_meanings-1`](specification.md#requirement-match_value_meanings-1) | [Test](../acceptance/tests/test_cadsr.py#L703) |
 
 <details>
 <summary>Exact executable cases (11)</summary>
 
-- <code>acceptance/tests/test_cadsr.py::test_a_match_with_no_concept_has_none_never_null</code> — [source](../acceptance/tests/test_cadsr.py#L685)
-- <code>acceptance/tests/test_cadsr.py::test_at_most_match_limit_matches_come_for_an_entity</code> — [source](../acceptance/tests/test_cadsr.py#L639)
-- <code>acceptance/tests/test_cadsr.py::test_data_element_matches_are_scored_and_rule_attributed_as_the_platform_says</code> — [source](../acceptance/tests/test_cadsr.py#L573)
-- <code>acceptance/tests/test_cadsr.py::test_each_entity_s_matches_are_named_for_it_in_the_order_given</code> — [source](../acceptance/tests/test_cadsr.py#L597)
-- <code>acceptance/tests/test_cadsr.py::test_matching_slower_than_the_match_timeout_is_a_timeout[match_data_elements]</code> — [source](../acceptance/tests/test_cadsr.py#L670)
-- <code>acceptance/tests/test_cadsr.py::test_matching_slower_than_the_match_timeout_is_a_timeout[match_value_meanings]</code> — [source](../acceptance/tests/test_cadsr.py#L670)
-- <code>acceptance/tests/test_cadsr.py::test_more_values_than_the_tool_takes_is_an_invalid_request</code> — [source](../acceptance/tests/test_cadsr.py#L381)
-- <code>acceptance/tests/test_cadsr.py::test_value_meaning_matches_are_the_platform_s_in_its_order_with_their_rule</code> — [source](../acceptance/tests/test_cadsr.py#L357)
-- <code>acceptance/tests/test_cadsr.py::test_what_the_platform_does_not_take_is_an_invalid_request_never_ignored[model-variant]</code> — [source](../acceptance/tests/test_cadsr.py#L616)
-- <code>acceptance/tests/test_cadsr.py::test_what_the_platform_does_not_take_is_an_invalid_request_never_ignored[similarity-threshold]</code> — [source](../acceptance/tests/test_cadsr.py#L616)
-- <code>acceptance/tests/test_cadsr.py::test_what_the_platform_does_not_take_is_an_invalid_request_never_ignored[too-many-entities]</code> — [source](../acceptance/tests/test_cadsr.py#L616)
+- <code>acceptance/tests/test_cadsr.py::test_a_match_with_no_concept_has_none_never_null</code> — [source](../acceptance/tests/test_cadsr.py#L703)
+- <code>acceptance/tests/test_cadsr.py::test_at_most_match_limit_matches_come_for_an_entity</code> — [source](../acceptance/tests/test_cadsr.py#L657)
+- <code>acceptance/tests/test_cadsr.py::test_data_element_matches_are_scored_and_rule_attributed_as_the_platform_says</code> — [source](../acceptance/tests/test_cadsr.py#L591)
+- <code>acceptance/tests/test_cadsr.py::test_each_entity_s_matches_are_named_for_it_in_the_order_given</code> — [source](../acceptance/tests/test_cadsr.py#L615)
+- <code>acceptance/tests/test_cadsr.py::test_matching_slower_than_the_match_timeout_is_a_timeout[match_data_elements]</code> — [source](../acceptance/tests/test_cadsr.py#L688)
+- <code>acceptance/tests/test_cadsr.py::test_matching_slower_than_the_match_timeout_is_a_timeout[match_value_meanings]</code> — [source](../acceptance/tests/test_cadsr.py#L688)
+- <code>acceptance/tests/test_cadsr.py::test_more_values_than_the_tool_takes_is_an_invalid_request</code> — [source](../acceptance/tests/test_cadsr.py#L399)
+- <code>acceptance/tests/test_cadsr.py::test_value_meaning_matches_are_the_platform_s_in_its_order_with_their_rule</code> — [source](../acceptance/tests/test_cadsr.py#L375)
+- <code>acceptance/tests/test_cadsr.py::test_what_the_platform_does_not_take_is_an_invalid_request_never_ignored[model-variant]</code> — [source](../acceptance/tests/test_cadsr.py#L634)
+- <code>acceptance/tests/test_cadsr.py::test_what_the_platform_does_not_take_is_an_invalid_request_never_ignored[similarity-threshold]</code> — [source](../acceptance/tests/test_cadsr.py#L634)
+- <code>acceptance/tests/test_cadsr.py::test_what_the_platform_does_not_take_is_an_invalid_request_never_ignored[too-many-entities]</code> — [source](../acceptance/tests/test_cadsr.py#L634)
 
 </details>
 
@@ -1733,18 +1733,18 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| Form modules and status match the source, including for a retired form. | 1 | [`get_form-1`](specification.md#requirement-get_form-1) | [Test](../acceptance/tests/test_cadsr.py#L283) |
-| Requesting a form without modules omits that section. | 1 | [`get_form-1`](specification.md#requirement-get_form-1) | [Test](../acceptance/tests/test_cadsr.py#L297) |
-| Keyword retrieval is refused with an explanation that an identifier is needed. | 1 | [`get_form-1`](specification.md#requirement-get_form-1) | [Test](../acceptance/tests/test_cadsr.py#L308) |
-| The contract-defined unknown-form response is interpreted as not found despite HTTP success. | 1 | [`X-15`](specification.md#requirement-X-15) | [Test](../acceptance/tests/test_cadsr.py#L318) |
+| Form modules and status match the source, including for a retired form. | 1 | [`get_form-1`](specification.md#requirement-get_form-1) | [Test](../acceptance/tests/test_cadsr.py#L301) |
+| Requesting a form without modules omits that section. | 1 | [`get_form-1`](specification.md#requirement-get_form-1) | [Test](../acceptance/tests/test_cadsr.py#L315) |
+| Keyword retrieval is refused with an explanation that an identifier is needed. | 1 | [`get_form-1`](specification.md#requirement-get_form-1) | [Test](../acceptance/tests/test_cadsr.py#L326) |
+| The contract-defined unknown-form response is interpreted as not found despite HTTP success. | 1 | [`X-15`](specification.md#requirement-X-15) | [Test](../acceptance/tests/test_cadsr.py#L336) |
 
 <details>
 <summary>Exact executable cases (4)</summary>
 
-- <code>acceptance/tests/test_cadsr.py::test_a_form_keyword_is_an_invalid_request_saying_an_identifier_is_needed</code> — [source](../acceptance/tests/test_cadsr.py#L308)
-- <code>acceptance/tests/test_cadsr.py::test_a_form_returns_its_modules_and_its_status_unchanged_a_retired_one_too</code> — [source](../acceptance/tests/test_cadsr.py#L283)
-- <code>acceptance/tests/test_cadsr.py::test_a_form_without_its_modules_has_none</code> — [source](../acceptance/tests/test_cadsr.py#L297)
-- <code>acceptance/tests/test_cadsr.py::test_an_unknown_form_answered_inside_an_http_200_is_not_found</code> — [source](../acceptance/tests/test_cadsr.py#L318)
+- <code>acceptance/tests/test_cadsr.py::test_a_form_keyword_is_an_invalid_request_saying_an_identifier_is_needed</code> — [source](../acceptance/tests/test_cadsr.py#L326)
+- <code>acceptance/tests/test_cadsr.py::test_a_form_returns_its_modules_and_its_status_unchanged_a_retired_one_too</code> — [source](../acceptance/tests/test_cadsr.py#L301)
+- <code>acceptance/tests/test_cadsr.py::test_a_form_without_its_modules_has_none</code> — [source](../acceptance/tests/test_cadsr.py#L315)
+- <code>acceptance/tests/test_cadsr.py::test_an_unknown_form_answered_inside_an_http_200_is_not_found</code> — [source](../acceptance/tests/test_cadsr.py#L336)
 
 </details>
 
@@ -1762,19 +1762,19 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| Each code map preserves data-element identity, values, users, coverage and source fields. | 1 | [`get_code_map-1`](specification.md#requirement-get_code_map-1) | [Test](../acceptance/tests/test_cadsr.py#L403) |
-| An absent value binding is reported explicitly with no fabricated values. | 1 | [`get_code_map-1`](specification.md#requirement-get_code_map-1) | [Test](../acceptance/tests/test_cadsr.py#L441) |
-| Selecting a context returns its maps without confusing a name with part of another name. | 2 | [`get_code_map-1`](specification.md#requirement-get_code_map-1) | [Test](../acceptance/tests/test_cadsr.py#L452) |
-| A source-system choice outside CRDC is rejected. | 1 | [`get_code_map-1`](specification.md#requirement-get_code_map-1) | [Test](../acceptance/tests/test_cadsr.py#L467) |
+| Each code map preserves data-element identity, values, users, coverage and source fields. | 1 | [`get_code_map-1`](specification.md#requirement-get_code_map-1) | [Test](../acceptance/tests/test_cadsr.py#L421) |
+| An absent value binding is reported explicitly with no fabricated values. | 1 | [`get_code_map-1`](specification.md#requirement-get_code_map-1) | [Test](../acceptance/tests/test_cadsr.py#L459) |
+| Selecting a context returns its maps without confusing a name with part of another name. | 2 | [`get_code_map-1`](specification.md#requirement-get_code_map-1) | [Test](../acceptance/tests/test_cadsr.py#L470) |
+| A source-system choice outside CRDC is rejected. | 1 | [`get_code_map-1`](specification.md#requirement-get_code_map-1) | [Test](../acceptance/tests/test_cadsr.py#L485) |
 
 <details>
 <summary>Exact executable cases (5)</summary>
 
-- <code>acceptance/tests/test_cadsr.py::test_a_code_map_is_a_data_element_s_values_users_and_coverage</code> — [source](../acceptance/tests/test_cadsr.py#L403)
-- <code>acceptance/tests/test_cadsr.py::test_a_context_selects_the_code_maps_it_uses[CIP]</code> — [source](../acceptance/tests/test_cadsr.py#L452)
-- <code>acceptance/tests/test_cadsr.py::test_a_context_selects_the_code_maps_it_uses[GDC]</code> — [source](../acceptance/tests/test_cadsr.py#L452)
-- <code>acceptance/tests/test_cadsr.py::test_a_data_element_without_value_level_binding_says_so</code> — [source](../acceptance/tests/test_cadsr.py#L441)
-- <code>acceptance/tests/test_cadsr.py::test_a_source_system_other_than_crdc_is_an_invalid_request</code> — [source](../acceptance/tests/test_cadsr.py#L467)
+- <code>acceptance/tests/test_cadsr.py::test_a_code_map_is_a_data_element_s_values_users_and_coverage</code> — [source](../acceptance/tests/test_cadsr.py#L421)
+- <code>acceptance/tests/test_cadsr.py::test_a_context_selects_the_code_maps_it_uses[CIP]</code> — [source](../acceptance/tests/test_cadsr.py#L470)
+- <code>acceptance/tests/test_cadsr.py::test_a_context_selects_the_code_maps_it_uses[GDC]</code> — [source](../acceptance/tests/test_cadsr.py#L470)
+- <code>acceptance/tests/test_cadsr.py::test_a_data_element_without_value_level_binding_says_so</code> — [source](../acceptance/tests/test_cadsr.py#L459)
+- <code>acceptance/tests/test_cadsr.py::test_a_source_system_other_than_crdc_is_an_invalid_request</code> — [source](../acceptance/tests/test_cadsr.py#L485)
 
 </details>
 
@@ -1792,12 +1792,12 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| Context names match the source listing and also serve as their identifiers. | 1 | [`list_contexts-1`](specification.md#requirement-list_contexts-1) | [Test](../acceptance/tests/test_cadsr.py#L701) |
+| Context names match the source listing and also serve as their identifiers. | 1 | [`list_contexts-1`](specification.md#requirement-list_contexts-1) | [Test](../acceptance/tests/test_cadsr.py#L719) |
 
 <details>
 <summary>Exact executable cases (1)</summary>
 
-- <code>acceptance/tests/test_cadsr.py::test_the_contexts_are_the_registry_s_context_names</code> — [source](../acceptance/tests/test_cadsr.py#L701)
+- <code>acceptance/tests/test_cadsr.py::test_the_contexts_are_the_registry_s_context_names</code> — [source](../acceptance/tests/test_cadsr.py#L719)
 
 </details>
 
@@ -1815,24 +1815,24 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| Concept-only and descendant-expanded searches return the corresponding source data-element uses. | 2 | [`find_data_elements_for_concept-1`](specification.md#requirement-find_data_elements_for_concept-1) | [Test](../acceptance/tests/test_cross_domain.py#L58) |
-| Requested permissible-value uses represent the concept or selected descendants. | 2 | [`find_data_elements_for_concept-2`](specification.md#requirement-find_data_elements_for_concept-2) | [Test](../acceptance/tests/test_cross_domain.py#L77) |
-| Answers preserve both graph identities and dates and distinguish NCIt release from registry state. | 1 | [`find_data_elements_for_concept-3`](specification.md#requirement-find_data_elements_for_concept-3) | [Test](../acceptance/tests/test_cross_domain.py#L106) |
-| A requested release different from the NCIt graph is rejected. | 1 | [`find_data_elements_for_concept-4`](specification.md#requirement-find_data_elements_for_concept-4) | [Test](../acceptance/tests/test_cross_domain.py#L134) |
-| Concept-use queries reject unsupported terminologies. | 1 | [`find_data_elements_for_concept-4`](specification.md#requirement-find_data_elements_for_concept-4) | [Test](../acceptance/tests/test_cross_domain.py#L152) |
-| An oversized descendant-use result is bounded and reports at least the known omitted amount. | 1 | [`find_data_elements_for_concept-5`](specification.md#requirement-find_data_elements_for_concept-5) | [Test](../acceptance/tests/test_cross_domain.py#L160) |
+| Concept-only and descendant-expanded searches match recorded source uses in fixture mode; live uses carry identity and provenance matching the discovered NCIt release. | 2 | [`find_data_elements_for_concept-1`](specification.md#requirement-find_data_elements_for_concept-1) | [Test](../acceptance/tests/test_cross_domain.py#L60) |
+| Requested permissible-value uses represent the concept or selected descendants. | 2 | [`find_data_elements_for_concept-2`](specification.md#requirement-find_data_elements_for_concept-2) | [Test](../acceptance/tests/test_cross_domain.py#L88) |
+| Answers preserve both graph identities and dates and distinguish NCIt release from registry state. | 1 | [`find_data_elements_for_concept-3`](specification.md#requirement-find_data_elements_for_concept-3) | [Test](../acceptance/tests/test_cross_domain.py#L117) |
+| A requested release different from the NCIt graph is rejected. | 1 | [`find_data_elements_for_concept-4`](specification.md#requirement-find_data_elements_for_concept-4) | [Test](../acceptance/tests/test_cross_domain.py#L145) |
+| Concept-use queries reject unsupported terminologies. | 1 | [`find_data_elements_for_concept-4`](specification.md#requirement-find_data_elements_for_concept-4) | [Test](../acceptance/tests/test_cross_domain.py#L163) |
+| An oversized descendant-use result is bounded and reports at least the known omitted amount. | 1 | [`find_data_elements_for_concept-5`](specification.md#requirement-find_data_elements_for_concept-5) | [Test](../acceptance/tests/test_cross_domain.py#L171) |
 
 <details>
 <summary>Exact executable cases (8)</summary>
 
-- <code>acceptance/tests/test_cross_domain.py::test_a_release_other_than_the_ncit_graph_s_fails_closed</code> — [source](../acceptance/tests/test_cross_domain.py#L134)
-- <code>acceptance/tests/test_cross_domain.py::test_a_terminology_other_than_ncit_is_an_invalid_request</code> — [source](../acceptance/tests/test_cross_domain.py#L152)
-- <code>acceptance/tests/test_cross_domain.py::test_an_answer_of_the_shared_si_service_names_both_graphs_and_both_content_states</code> — [source](../acceptance/tests/test_cross_domain.py#L106)
-- <code>acceptance/tests/test_cross_domain.py::test_descendants_beyond_the_tool_s_maximum_are_truncated_with_how_much_was_left_out</code> — [source](../acceptance/tests/test_cross_domain.py#L160)
-- <code>acceptance/tests/test_cross_domain.py::test_the_data_elements_are_the_concept_s_and_with_expansion_its_descendants_too[False-data-elements-c17357]</code> — [source](../acceptance/tests/test_cross_domain.py#L58)
-- <code>acceptance/tests/test_cross_domain.py::test_the_data_elements_are_the_concept_s_and_with_expansion_its_descendants_too[True-data-elements-c17357-descendants]</code> — [source](../acceptance/tests/test_cross_domain.py#L58)
-- <code>acceptance/tests/test_cross_domain.py::test_with_the_flag_the_permissible_values_that_stand_for_the_concept_come_too[False-values-c17357]</code> — [source](../acceptance/tests/test_cross_domain.py#L77)
-- <code>acceptance/tests/test_cross_domain.py::test_with_the_flag_the_permissible_values_that_stand_for_the_concept_come_too[True-values-c17357-descendants]</code> — [source](../acceptance/tests/test_cross_domain.py#L77)
+- <code>acceptance/tests/test_cross_domain.py::test_a_release_other_than_the_ncit_graph_s_fails_closed</code> — [source](../acceptance/tests/test_cross_domain.py#L145)
+- <code>acceptance/tests/test_cross_domain.py::test_a_terminology_other_than_ncit_is_an_invalid_request</code> — [source](../acceptance/tests/test_cross_domain.py#L163)
+- <code>acceptance/tests/test_cross_domain.py::test_an_answer_of_the_shared_si_service_names_both_graphs_and_both_content_states</code> — [source](../acceptance/tests/test_cross_domain.py#L117)
+- <code>acceptance/tests/test_cross_domain.py::test_descendants_beyond_the_tool_s_maximum_are_truncated_with_how_much_was_left_out</code> — [source](../acceptance/tests/test_cross_domain.py#L171)
+- <code>acceptance/tests/test_cross_domain.py::test_the_data_elements_are_the_concept_s_and_with_expansion_its_descendants_too[False-data-elements-c17357]</code> — [source](../acceptance/tests/test_cross_domain.py#L60)
+- <code>acceptance/tests/test_cross_domain.py::test_the_data_elements_are_the_concept_s_and_with_expansion_its_descendants_too[True-data-elements-c17357-descendants]</code> — [source](../acceptance/tests/test_cross_domain.py#L60)
+- <code>acceptance/tests/test_cross_domain.py::test_with_the_flag_the_permissible_values_that_stand_for_the_concept_come_too[False-values-c17357]</code> — [source](../acceptance/tests/test_cross_domain.py#L88)
+- <code>acceptance/tests/test_cross_domain.py::test_with_the_flag_the_permissible_values_that_stand_for_the_concept_come_too[True-values-c17357-descendants]</code> — [source](../acceptance/tests/test_cross_domain.py#L88)
 
 </details>
 
@@ -1850,19 +1850,19 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| A permissible value resolves to its source concept and preserves terminology and registry provenance. | 1 | [`get_concept_for_permissible_value-1`](specification.md#requirement-get_concept_for_permissible_value-1) | [Test](../acceptance/tests/test_cross_domain.py#L223) |
-| Changed case, extra spaces and other nonmatching values are not silently normalized into a match. | 4 | [`get_concept_for_permissible_value-3`](specification.md#requirement-get_concept_for_permissible_value-3) | [Test](../acceptance/tests/test_cross_domain.py#L246) |
-| Unsupported retrieval by permissible-value identifier reports capability unavailable. | 1 | [`get_concept_for_permissible_value-2`](specification.md#requirement-get_concept_for_permissible_value-2) | [Test](../acceptance/tests/test_cross_domain.py#L263) |
+| A permissible value resolves to its source concept and preserves terminology and registry provenance. | 1 | [`get_concept_for_permissible_value-1`](specification.md#requirement-get_concept_for_permissible_value-1) | [Test](../acceptance/tests/test_cross_domain.py#L234) |
+| Changed case, extra spaces and other nonmatching values are not silently normalized into a match. | 4 | [`get_concept_for_permissible_value-3`](specification.md#requirement-get_concept_for_permissible_value-3) | [Test](../acceptance/tests/test_cross_domain.py#L257) |
+| Unsupported retrieval by permissible-value identifier reports capability unavailable. | 1 | [`get_concept_for_permissible_value-2`](specification.md#requirement-get_concept_for_permissible_value-2) | [Test](../acceptance/tests/test_cross_domain.py#L274) |
 
 <details>
 <summary>Exact executable cases (6)</summary>
 
-- <code>acceptance/tests/test_cross_domain.py::test_a_permissible_value_by_its_identifier_is_unavailable</code> — [source](../acceptance/tests/test_cross_domain.py#L263)
-- <code>acceptance/tests/test_cross_domain.py::test_a_value_resolves_to_the_concept_it_stands_for_naming_both_content_states</code> — [source](../acceptance/tests/test_cross_domain.py#L223)
-- <code>acceptance/tests/test_cross_domain.py::test_a_value_the_data_element_does_not_have_as_given_is_not_found[ Male]</code> — [source](../acceptance/tests/test_cross_domain.py#L246)
-- <code>acceptance/tests/test_cross_domain.py::test_a_value_the_data_element_does_not_have_as_given_is_not_found[MALE]</code> — [source](../acceptance/tests/test_cross_domain.py#L246)
-- <code>acceptance/tests/test_cross_domain.py::test_a_value_the_data_element_does_not_have_as_given_is_not_found[Male ]</code> — [source](../acceptance/tests/test_cross_domain.py#L246)
-- <code>acceptance/tests/test_cross_domain.py::test_a_value_the_data_element_does_not_have_as_given_is_not_found[male]</code> — [source](../acceptance/tests/test_cross_domain.py#L246)
+- <code>acceptance/tests/test_cross_domain.py::test_a_permissible_value_by_its_identifier_is_unavailable</code> — [source](../acceptance/tests/test_cross_domain.py#L274)
+- <code>acceptance/tests/test_cross_domain.py::test_a_value_resolves_to_the_concept_it_stands_for_naming_both_content_states</code> — [source](../acceptance/tests/test_cross_domain.py#L234)
+- <code>acceptance/tests/test_cross_domain.py::test_a_value_the_data_element_does_not_have_as_given_is_not_found[ Male]</code> — [source](../acceptance/tests/test_cross_domain.py#L257)
+- <code>acceptance/tests/test_cross_domain.py::test_a_value_the_data_element_does_not_have_as_given_is_not_found[MALE]</code> — [source](../acceptance/tests/test_cross_domain.py#L257)
+- <code>acceptance/tests/test_cross_domain.py::test_a_value_the_data_element_does_not_have_as_given_is_not_found[Male ]</code> — [source](../acceptance/tests/test_cross_domain.py#L257)
+- <code>acceptance/tests/test_cross_domain.py::test_a_value_the_data_element_does_not_have_as_given_is_not_found[male]</code> — [source](../acceptance/tests/test_cross_domain.py#L257)
 
 </details>
 
@@ -1880,16 +1880,16 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| GDC values come from the named mapset with matching release identity and asserted evidence. | 1 | [`resolve_stored_value-1`](specification.md#requirement-resolve_stored_value-1) | [Test](../acceptance/tests/test_cross_domain.py#L278) |
-| Other supported commons use the CRDC crosswalk and name each value's data element. | 1 | [`resolve_stored_value-2`](specification.md#requirement-resolve_stored_value-2) | [Test](../acceptance/tests/test_cross_domain.py#L331) |
-| Without value binding, no stored value is invented and the evidence states the limitation and lack of confidence. | 1 | [`resolve_stored_value-3`](specification.md#requirement-resolve_stored_value-3) | [Test](../acceptance/tests/test_cross_domain.py#L351) |
+| GDC values come from the named mapset with matching release identity and asserted evidence. | 1 | [`resolve_stored_value-1`](specification.md#requirement-resolve_stored_value-1) | [Test](../acceptance/tests/test_cross_domain.py#L289) |
+| Other supported commons use the CRDC crosswalk and name each value's data element. | 1 | [`resolve_stored_value-2`](specification.md#requirement-resolve_stored_value-2) | [Test](../acceptance/tests/test_cross_domain.py#L342) |
+| Without value binding, no stored value is invented and the evidence states the limitation and lack of confidence. | 1 | [`resolve_stored_value-3`](specification.md#requirement-resolve_stored_value-3) | [Test](../acceptance/tests/test_cross_domain.py#L362) |
 
 <details>
 <summary>Exact executable cases (3)</summary>
 
-- <code>acceptance/tests/test_cross_domain.py::test_a_commons_without_a_value_level_binding_stores_no_value_and_says_so</code> — [source](../acceptance/tests/test_cross_domain.py#L351)
-- <code>acceptance/tests/test_cross_domain.py::test_a_gdc_value_resolves_through_the_mapset_its_source_names</code> — [source](../acceptance/tests/test_cross_domain.py#L278)
-- <code>acceptance/tests/test_cross_domain.py::test_another_commons_value_resolves_through_the_crdc_crosswalk</code> — [source](../acceptance/tests/test_cross_domain.py#L331)
+- <code>acceptance/tests/test_cross_domain.py::test_a_commons_without_a_value_level_binding_stores_no_value_and_says_so</code> — [source](../acceptance/tests/test_cross_domain.py#L362)
+- <code>acceptance/tests/test_cross_domain.py::test_a_gdc_value_resolves_through_the_mapset_its_source_names</code> — [source](../acceptance/tests/test_cross_domain.py#L289)
+- <code>acceptance/tests/test_cross_domain.py::test_another_commons_value_resolves_through_the_crdc_crosswalk</code> — [source](../acceptance/tests/test_cross_domain.py#L342)
 
 </details>
 
@@ -1907,13 +1907,13 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| Alignment preserves all dataset dates, calculates the largest interval and checks warning behaviour above the default threshold and below a larger explicit threshold. | 2 | [`get_release_alignment-1`](specification.md#requirement-get_release_alignment-1) | [Test](../acceptance/tests/test_cross_domain.py#L382) |
+| Alignment preserves all dataset dates, calculates the largest interval and checks warning behaviour above the default threshold and below a larger explicit threshold. | 2 | [`get_release_alignment-1`](specification.md#requirement-get_release_alignment-1) | [Test](../acceptance/tests/test_cross_domain.py#L393) |
 
 <details>
 <summary>Exact executable cases (2)</summary>
 
-- <code>acceptance/tests/test_cross_domain.py::test_every_dataset_is_dated_with_the_largest_interval_and_a_warning_above_the_threshold[120]</code> — [source](../acceptance/tests/test_cross_domain.py#L382)
-- <code>acceptance/tests/test_cross_domain.py::test_every_dataset_is_dated_with_the_largest_interval_and_a_warning_above_the_threshold[None]</code> — [source](../acceptance/tests/test_cross_domain.py#L382)
+- <code>acceptance/tests/test_cross_domain.py::test_every_dataset_is_dated_with_the_largest_interval_and_a_warning_above_the_threshold[120]</code> — [source](../acceptance/tests/test_cross_domain.py#L393)
+- <code>acceptance/tests/test_cross_domain.py::test_every_dataset_is_dated_with_the_largest_interval_and_a_warning_above_the_threshold[None]</code> — [source](../acceptance/tests/test_cross_domain.py#L393)
 
 </details>
 
