@@ -9,7 +9,7 @@ from scripts.portal_help import help_page
 from scripts.portal_job_views import jobs_page
 from scripts.portal_views import comparison_page, history_page, page, run_page
 
-from test_evidence_acceptance import project, report
+from test_evidence_acceptance import missing_report, project, report
 from test_evidence_benchmark import project as benchmark_projection
 from test_evidence_benchmark import selected_projection
 
@@ -142,6 +142,32 @@ class PortalViewsTest(unittest.TestCase):
         self.assertIn("<td>passed</td>", html)
         self.assertIn("1 of 2 cases", html)
         self.assertNotIn("<td>PASS</td>", html)
+        self.assertNotIn("No report was produced", html)
+
+    def test_an_absent_report_is_named_on_the_run_page(self):
+        html = run_page(self.record(missing_report()))
+        self.assertIn("No report was produced", html)
+        self.assertNotIn("<caption>Tool verdicts</caption>", html)
+
+    def test_an_older_partial_report_names_a_reason(self):
+        native = report()
+        del native["tests"]["tests/test_example.py::test_protocol"]
+        html = run_page(self.record(project(native, state="failed", exit_code=1)))
+        self.assertIn("no verdict shown. failed.", html)
+        self.assertIn("selected cases without an outcome: 1", html)
+
+    def test_a_complete_failing_run_keeps_its_tool_verdicts(self):
+        native = report() | {
+            "run": {"exit_status": 1, "selected": 2, "finished": 2, "worker_crashes": 0}
+        }
+        native["tests"]["tests/test_example.py::test_lookup"]["outcome"] = "failed"
+        native["tools"]["lookup"].update(outcome="FAIL", counts={"failed": 1})
+        evidence = project(native, state="failed", exit_code=1)
+        self.assertTrue(evidence["inventory_complete"])
+        html = run_page(self.record(evidence))
+        self.assertIn("<caption>Tool verdicts</caption>", html)
+        self.assertIn("<td>FAIL</td>", html)
+        self.assertNotIn("no verdict shown", html)
 
     def test_crashed_or_interrupted_fresh_runs_have_no_verdict_even_with_all_cases(self):
         for status, crashes, reason in (

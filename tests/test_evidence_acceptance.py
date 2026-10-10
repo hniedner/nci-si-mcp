@@ -69,7 +69,30 @@ def project(native=None, context=None, **changes):
     return project_acceptance(encoded(metadata), raw, **context)
 
 
+def missing_report():
+    context = bundle()
+    metadata = envelope(state="unavailable", exit_code=None, report_sha256=None)
+    metadata.update(
+        {name + "_sha256": hashlib.sha256(data).hexdigest() for name, data in context.items()}
+    )
+    return project_acceptance(encoded(metadata), None, **context)
+
+
 class AcceptanceProjectionTest(unittest.TestCase):
+    def test_unknown_report_fields_are_rejected(self):
+        with self.assertRaises(EvidenceError):
+            project(report() | {"extra": True})
+
+    def test_missing_report_fields_are_validation_errors(self):
+        native = report()
+        del native["mode"]
+        with self.assertRaises(EvidenceError):
+            project(native)
+
+    def test_a_list_of_report_field_names_is_not_a_report(self):
+        with self.assertRaises(EvidenceError):
+            project(list(report()))
+
     def test_a_fresh_report_with_completion_evidence_is_projected(self):
         native = report() | {
             "run": {"exit_status": 0, "selected": 2, "finished": 2, "worker_crashes": 0}
@@ -240,12 +263,7 @@ class AcceptanceProjectionTest(unittest.TestCase):
                 project_acceptance(encoded(metadata), raw, **changed)
 
     def test_missing_report_preserves_execution_without_inventing_test_counts(self):
-        context = bundle()
-        metadata = envelope(state="unavailable", exit_code=None, report_sha256=None)
-        metadata.update(
-            {name + "_sha256": hashlib.sha256(data).hexdigest() for name, data in context.items()}
-        )
-        result = project_acceptance(encoded(metadata), None, **context)
+        result = missing_report()
         self.assertIsNone(result["counts"])
         self.assertFalse(result["inventory_complete"])
         self.assertEqual(len(result["missing"]), 2)
