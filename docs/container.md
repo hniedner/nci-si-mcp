@@ -70,6 +70,28 @@ To roll back, activate the retained predecessor in the operator copy, verify its
 and replace/restart serving replicas with that snapshot. Coordinate the rollout; the image
 does not synchronize local files or sessions across replicas.
 
+## Gateway controls and outbound access
+
+The gateway must enforce rate limits and quotas per verified principal or authenticated client,
+never an untrusted forwarded identity header. The [implementation plan](implementation-plan.md)
+deliberately adds no local rate limiter. Per-call upstream request budgets, response size limits
+and session caps do not replace cross-request admission limits. Each upstream request has a
+timeout, but the server has no whole-call deadline: configure a gateway request timeout as the
+client-facing end-to-end bound; it does not guarantee cancellation of server work.
+
+Restrict outbound traffic at the network layer to the origins configured by these settings:
+
+- `NCI_SI_EVS_BASE_URL`
+- `NCI_SI_EVS_FHIR_BASE_URL`
+- `NCI_SI_CADSR_BASE_URL`
+- `NCI_SI_CADSR_FTP_URL`
+- `NCI_SI_SSIS_SPARQL_URL`
+
+Derive the allow-list from deployment configuration, not a fixed list of production hosts.
+Mounted model and index assets need no download access. Separately account for destinations
+required by the approved identity integration. The local compose `serving` network does not
+enforce an egress allow-list; that policy belongs to the deployment network or egress proxy.
+
 ## Build and release evidence
 
 ### Release pipeline
