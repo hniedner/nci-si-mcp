@@ -433,7 +433,10 @@ def test_a_state_hook_that_fails_fails_the_test_with_what_it_said_less_the_crede
     stub, tmp_path, monkeypatch
 ):
     monkeypatch.setenv("NCI_SI_ACCEPTANCE_AUTHORIZATION", CREDENTIAL)
-    command = f'echo "told {CREDENTIAL}, has [$NCI_SI_ACCEPTANCE_AUTHORIZATION]"; exit 3'
+    command = (
+        f'printf "%s" "{"x" * 3000}"; '
+        f'echo "told {CREDENTIAL}, has [$NCI_SI_ACCEPTANCE_AUTHORIZATION]"; exit 3'
+    )
 
     with pytest.raises(pytest.fail.Exception) as ended:
         hook_for(stub, tmp_path, command).apply(("a/one",), {})

@@ -414,7 +414,7 @@ def test_without_a_prepare_command_a_test_that_needs_it_is_not_run(suite):
     ("script", "said", "outcome"),
     [
         (
-            "import sys\nsys.stderr.write('no index built\\n')\nraise SystemExit(3)",
+            "import sys\nsys.stderr.write('x' * 3000 + 'no index built\\n')\nraise SystemExit(3)",
             "*no index built*",
             "failed",
         ),

@@ -10,8 +10,11 @@ import pytest
 import yaml
 from conftest import STAND_IN
 
+from nci_si_acceptance.report import load_report
+
 pytest_plugins = ["pytester"]
 SELECTED = 8
+ARGUMENT_ERROR = 2
 
 PROBE = """
 import os
@@ -20,7 +23,7 @@ import pytest
 @pytest.mark.live_capable
 @pytest.mark.tool("get_form")
 @pytest.mark.parametrize("case", range(8))
-def test_probe(case):
+def test_probe(case, request):
     {body}
 """
 
@@ -103,6 +106,20 @@ def test_a_restarted_worker_crash_cannot_become_a_complete_run(compliant):
     assert result.ret == 1
 
 
+def test_a_reported_case_that_crashes_in_its_finalizer_never_counts_as_finished(compliant):
+    result, path, report = produce(
+        compliant, body="request.addfinalizer(lambda: os._exit(7)) if case == 0 else None"
+    )
+    assert "incomplete run; re-run it" in command("report", path).stderr
+    assert report["run"]["finished"] == SELECTED - 1
+    assert len(report["tests"]) == report["run"]["selected"] == SELECTED
+    assert result.ret == 1
+    # Isolate finished-count validation from the independently tested crash refusal.
+    report["run"]["worker_crashes"] = 0
+    path.write_text(json.dumps(report))
+    assert "incomplete run; re-run it" in command("report", path).stderr
+
+
 def test_complete_skipped_tests_are_still_a_completed_run(compliant):
     result, path, report = produce(compliant, body="pytest.skip('not applicable')")
 
@@ -122,6 +139,35 @@ def test_complete_skipped_tests_are_still_a_completed_run(compliant):
 def complete(compliant):
     _, path, report = produce(compliant)
     return path, report
+
+
+@pytest.mark.parametrize(
+    "changes", [{"worker_crashes": 1}, *({"exit_status": status} for status in (2, 3, 4))]
+)
+def test_crash_and_exit_status_refuse_even_equal_counts(complete, changes):
+    path, report = complete
+    report["run"].update(changes)
+    path.write_text(json.dumps(report))
+    with pytest.raises(SystemExit, match="incomplete run; re-run it"):
+        load_report(path, "fixture")
+
+
+ONE_RUN = {"exit_status": 0, "selected": 1, "finished": 1, "worker_crashes": 0}
+
+
+@pytest.mark.parametrize(
+    "run",
+    [None, [], ONE_RUN | {"worker_crashes": False}]
+    + [ONE_RUN | {field: True} for field in ONE_RUN]
+    + [{key: value for key, value in ONE_RUN.items() if key != field} for field in ONE_RUN],
+)
+def test_invalid_run_metadata_is_refused_cleanly(compliant, run):
+    _, path, report = produce(compliant, "-k", "[1]")
+    assert load_report(path, "fixture")["run"] == ONE_RUN
+    report["run"] = run
+    path.write_text(json.dumps(report))
+    with pytest.raises(SystemExit, match="incomplete run; re-run it"):
+        load_report(path, "fixture")
 
 
 @pytest.mark.parametrize("operation", ["check", "update"])
@@ -212,19 +258,47 @@ def test_combination_and_drift_refuse_an_empty_live_report(complete):
     assert "0 tests pass" not in drift.stdout
 
 
-def test_drift_reports_only_fixture_passes_that_fail_live(complete):
+@pytest.mark.parametrize(
+    ("fixture_outcome", "live_outcome", "count"),
+    [
+        ("passed", "failed", 1),
+        ("skipped", "failed", 0),
+        ("not_live", "failed", 0),
+        ("passed", "no_fixture", 1),
+    ],
+)
+def test_drift_reports_only_fixture_passes_that_fail_live(
+    complete, fixture_outcome, live_outcome, count
+):
     path, report = complete
     live = path.with_name("live.json")
+    report["tests"]["tests/test_completion.py::test_probe[1]"]["outcome"] = fixture_outcome
+    path.write_text(json.dumps(report))
     report["mode"] = "live"
-    report["tests"]["tests/test_completion.py::test_probe[1]"]["outcome"] = "failed"
+    report["tests"]["tests/test_completion.py::test_probe[1]"]["outcome"] = live_outcome
     live.write_text(json.dumps(report))
 
     drift = command("report", path, "--live", live, "--drift")
 
-    assert drift.stdout == (
-        "1 tests pass on the fixtures and fail live.\n- `tests/test_completion.py::test_probe[1]`\n"
-    )
-    assert drift.returncode == 1
+    listed = "- `tests/test_completion.py::test_probe[1]`\n" if count else ""
+    assert drift.stdout == f"{count} tests pass on the fixtures and fail live.\n{listed}"
+    assert drift.returncode == count
+
+
+def test_check_complete_is_silent_and_drift_requires_live(complete):
+    path, _ = complete
+    checked = command("report", path, "--check-complete", "fixture")
+    assert checked.stdout == ""
+    assert checked.returncode == 0
+    refused = command("report", path, "--drift")
+    assert refused.returncode == ARGUMENT_ERROR
+    assert "--drift requires --live" in refused.stderr
+
+
+def test_wrong_mode_names_the_expected_run(complete):
+    path, _ = complete
+    with pytest.raises(SystemExit, match="not a live run"):
+        load_report(path, "live")
 
 
 @pytest.mark.parametrize("options", [(), ("--drift",)], ids=["combined", "drift"])
