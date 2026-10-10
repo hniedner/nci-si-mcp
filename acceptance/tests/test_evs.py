@@ -131,6 +131,7 @@ def _recorded_section(body, section):
 
 @pytest.mark.tool("get_concept")
 @pytest.mark.requirement("get_concept-1")
+@pytest.mark.live_capable
 @pytest.mark.parametrize("section", SECTIONS)
 def test_an_include_value_returns_its_section_and_no_other(tools, pinned, recorded, section):
     body = recorded(CURRENT)["response"]["body"]
@@ -155,6 +156,7 @@ def test_descendants_is_no_include_value(tools, pinned):
 
 @pytest.mark.tool("get_concept")
 @pytest.mark.requirement("get_concept-3")
+@pytest.mark.live_capable
 @pytest.mark.parametrize(
     ("code", "recording"),
     [
@@ -774,6 +776,7 @@ def test_a_depth_above_the_maximum_is_applied_as_the_maximum_and_reported(tools,
 
 @pytest.mark.tool(HIERARCHY)
 @pytest.mark.requirement("get_concept_hierarchy-2")
+@pytest.mark.live_capable
 def test_paths_to_root_are_the_platform_s_paths_in_its_order(tools, pinned, recorded):
     paths = [_codes_of(path) for path in recorded(PATHS)["response"]["body"]]
 
@@ -1032,6 +1035,7 @@ def _maps(result):
 
 @pytest.mark.tool("get_concept_mappings")
 @pytest.mark.requirement("get_concept_mappings-1")
+@pytest.mark.live_capable
 def test_the_mappings_are_the_concept_s_maps_unchanged_in_order(tools, pinned, recorded):
     maps = recorded(CURRENT)["response"]["body"]["maps"]
 
@@ -1144,6 +1148,7 @@ def _relationships(tools, pinned):
 
 @pytest.mark.tool("list_relationships")
 @pytest.mark.requirement("list_relationships-1")
+@pytest.mark.live_capable
 def test_every_relationship_of_the_catalogue_is_listed_by_code_name_and_kind(
     tools, pinned, recorded
 ):

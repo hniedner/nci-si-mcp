@@ -128,6 +128,7 @@ def test_without_a_registry_release_the_export_date_stands_for_it(tools, upstrea
 
 @pytest.mark.tool("get_data_element")
 @pytest.mark.requirement("get_data_element-1")
+@pytest.mark.live_capable
 @pytest.mark.parametrize("version", [None, "1"], ids=["latest", "version-1"])
 def test_a_data_element_is_its_own_fields_alone_with_its_version_and_statuses(
     tools, recorded, version
@@ -221,6 +222,7 @@ def _returned(content, include):
 
 @pytest.mark.tool("get_data_element")
 @pytest.mark.requirement("get_data_element-1")
+@pytest.mark.live_capable
 @pytest.mark.parametrize("include", SECTIONS)
 def test_each_include_returns_its_section_as_the_platform_gives_it(tools, recorded, include):
     expected = _section(_element(recorded), include)

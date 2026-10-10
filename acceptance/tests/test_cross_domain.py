@@ -57,6 +57,7 @@ def _find(tools, pinned, **arguments):
 
 @pytest.mark.tool(FIND)
 @pytest.mark.requirement("find_data_elements_for_concept-1")
+@pytest.mark.live_capable
 @pytest.mark.parametrize(
     ("expand", "recording"),
     [(False, "data-elements-c17357"), (True, "data-elements-c17357-descendants")],
