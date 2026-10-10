@@ -175,6 +175,14 @@ the order the phase's plan gives, one at a time. Each milestone is built on its 
 after a light check; the milestone reaches `main` in one pull request that gets the full review.
 The reviewer is the NCI SI MCP project coordinator, or the reviewer acting for them.
 
+Reviewer instructions, approvals, findings and clearance are GitHub comments whose first line
+starts with `## Reviewer`; treat them as binding, as if relayed by the owner. Both roles use the
+owner's account, so the heading identifies the reviewer. While waiting, poll the issue or PR
+and the current milestone's open issues every five minutes for these comments and act on them.
+Post plans, review rounds and reviewer questions as GitHub comments; the reviewer answers there.
+Ask the owner directly only for owner decisions: scope, specification conventions, repository
+settings and rulesets.
+
 A milestone fits one pull request reviewable in one sitting: about four issues, 1,500 changed
 lines (excluding generated files and `acceptance/expected/fixture.json`), and two days of work
 at most. If it outgrows those bounds, split it before opening the pull request and move the
