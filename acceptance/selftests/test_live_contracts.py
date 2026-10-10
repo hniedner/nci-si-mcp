@@ -392,6 +392,13 @@ def test_live_checks_reject_single_corruptions(live_suite, family, index, path, 
     assert result.ret == 1
 
 
+def test_live_paths_require_at_least_one_path(live_suite):
+    # With no orphan nodes, only the nonempty-path contract can refuse this answer.
+    result, outcomes = run_family(live_suite, "paths", replacement={"paths": [], "nodes": []})
+    assert "failed" in outcomes.values(), outcomes
+    assert result.ret == 1
+
+
 @pytest.mark.parametrize(
     ("family", "content"),
     [

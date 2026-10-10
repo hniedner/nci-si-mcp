@@ -350,6 +350,21 @@ def test_requests_without_a_fixture_while_the_hook_starts_the_server_fail_depend
     )
 
 
+def test_unmatched_requests_during_a_state_change_are_reported_for_its_test(remote, monkeypatch):
+    fetch = fetches_at_startup("/api/v1/nothing")
+    command = f'if [ -n "$NCI_SI_ACCEPTANCE_SCENARIOS" ]; then {fetch}; fi'
+    monkeypatch.setenv("NCI_SI_ACCEPTANCE_STATE_HOOK", command)
+
+    result, report = remote(TOOLS_LIST, UNKNOWN_RELEASE)
+
+    assert outcomes_of(report) == {
+        TOOLS_LIST.partition("::")[2]: "passed",
+        UNKNOWN_RELEASE.partition("::")[2]: "no_fixture",
+    }
+    assert report["tests"][UNKNOWN_RELEASE]["unmatched"] == ["GET evs /api/v1/nothing {}"]
+    assert result.ret == 1
+
+
 def test_a_failed_scenario_state_change_is_reported_for_its_test(remote, monkeypatch):
     command = 'if [ -n "$NCI_SI_ACCEPTANCE_SCENARIOS" ]; then echo "state unavailable"; exit 3; fi'
     monkeypatch.setenv("NCI_SI_ACCEPTANCE_STATE_HOOK", command)
