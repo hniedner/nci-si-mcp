@@ -92,6 +92,8 @@ make an expired stateful session ID valid.
 Host and Origin allow-lists remain enabled on all bind addresses and cover health routes too.
 The port wildcard does not allow arbitrary hostnames. Configure the public authority at a
 reverse proxy; forwarded headers are not trusted automatically. A missing Origin is allowed.
+Deploy the [gateway admission and network egress controls](container.md#gateway-controls-and-outbound-access)
+separately from these server checks.
 Bodies over the configured cap return HTTP 413 before JSON parsing or tool execution, whether
 they declare Content-Length or arrive chunked. Raw HTTP access logging is disabled; application
 and HTTP-runner diagnostics are JSON on stderr in both transports.
