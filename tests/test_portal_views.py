@@ -153,7 +153,10 @@ class PortalViewsTest(unittest.TestCase):
         native = report()
         del native["tests"]["tests/test_example.py::test_protocol"]
         html = run_page(self.record(project(native, state="failed", exit_code=1)))
-        self.assertIn("no verdict shown. failed.", html)
+        self.assertTrue(
+            "no verdict shown. selected cases without an outcome." in html,
+            "Older partial evidence must explain the missing outcomes, not just its state",
+        )
         self.assertIn("selected cases without an outcome: 1", html)
 
     def test_a_complete_failing_run_keeps_its_tool_verdicts(self):
