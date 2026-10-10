@@ -341,7 +341,7 @@ def test_the_command_refuses_reports_that_differ_only_in_the_fixture_set(tmp_pat
 def test_the_command_refuses_a_report_of_the_wrong_run_mode(tmp_path):
     (tmp_path / "fixture.json").write_text(json.dumps(run({})), encoding="utf-8")
 
-    with pytest.raises(SystemExit, match="is the report of a fixture run, not of a live run"):
+    with pytest.raises(SystemExit, match="is the report of a fixture run, not a live run"):
         main([str(tmp_path / "fixture.json"), "--live", str(tmp_path / "fixture.json")])
 
 
