@@ -1168,7 +1168,9 @@ CATALOGUE = {"role": "recorded/evs/roles.json", "association": "recorded/evs/ass
 def _relationships(tools, pinned):
     result = tools.call("list_relationships", pinned)
     assert not result.is_error, result.content
-    return items_of("list_relationships", result.content)
+    listed = result.content.get("relationships")
+    assert isinstance(listed, list), result.content
+    return listed
 
 
 @pytest.mark.tool("list_relationships")

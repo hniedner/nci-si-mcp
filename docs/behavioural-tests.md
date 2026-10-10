@@ -1576,17 +1576,17 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| The recorded catalogue matches exactly in fixture mode; live entries carry code, name, kind, polarity and matching release provenance. | 1 | [`list_relationships-1`](specification.md#requirement-list_relationships-1) | [Test](../acceptance/tests/test_evs.py#L1174) |
-| Catalogue polarity remains correct when source relationship names change. | 1 | [`list_relationships-2`](specification.md#requirement-list_relationships-2) | [Test](../acceptance/tests/test_evs.py#L1202) |
-| Catalogue and neighbourhood calls reject a missing exclusion code and name what is absent. | 2 | [`list_relationships-3`](specification.md#requirement-list_relationships-3) | [Test](../acceptance/tests/test_evs.py#L1226) |
+| The recorded catalogue matches exactly in fixture mode; live entries carry code, name, kind, polarity and matching release provenance. | 1 | [`list_relationships-1`](specification.md#requirement-list_relationships-1) | [Test](../acceptance/tests/test_evs.py#L1176) |
+| Catalogue polarity remains correct when source relationship names change. | 1 | [`list_relationships-2`](specification.md#requirement-list_relationships-2) | [Test](../acceptance/tests/test_evs.py#L1204) |
+| Catalogue and neighbourhood calls reject a missing exclusion code and name what is absent. | 2 | [`list_relationships-3`](specification.md#requirement-list_relationships-3) | [Test](../acceptance/tests/test_evs.py#L1228) |
 
 <details>
 <summary>Exact executable cases (4)</summary>
 
-- <code>acceptance/tests/test_evs.py::test_a_catalogue_without_a_code_of_the_exclusion_set_fails_closed[get_concept_neighborhood]</code> — [source](../acceptance/tests/test_evs.py#L1226)
-- <code>acceptance/tests/test_evs.py::test_a_catalogue_without_a_code_of_the_exclusion_set_fails_closed[list_relationships]</code> — [source](../acceptance/tests/test_evs.py#L1226)
-- <code>acceptance/tests/test_evs.py::test_a_relationship_s_polarity_follows_its_code_not_its_name</code> — [source](../acceptance/tests/test_evs.py#L1202)
-- <code>acceptance/tests/test_evs.py::test_every_relationship_of_the_catalogue_is_listed_by_code_name_and_kind</code> — [source](../acceptance/tests/test_evs.py#L1174)
+- <code>acceptance/tests/test_evs.py::test_a_catalogue_without_a_code_of_the_exclusion_set_fails_closed[get_concept_neighborhood]</code> — [source](../acceptance/tests/test_evs.py#L1228)
+- <code>acceptance/tests/test_evs.py::test_a_catalogue_without_a_code_of_the_exclusion_set_fails_closed[list_relationships]</code> — [source](../acceptance/tests/test_evs.py#L1228)
+- <code>acceptance/tests/test_evs.py::test_a_relationship_s_polarity_follows_its_code_not_its_name</code> — [source](../acceptance/tests/test_evs.py#L1204)
+- <code>acceptance/tests/test_evs.py::test_every_relationship_of_the_catalogue_is_listed_by_code_name_and_kind</code> — [source](../acceptance/tests/test_evs.py#L1176)
 
 </details>
 
@@ -1816,23 +1816,23 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
 | Concept-only and descendant-expanded searches match recorded source uses in fixture mode; live uses carry identity and provenance matching the discovered NCIt release. | 2 | [`find_data_elements_for_concept-1`](specification.md#requirement-find_data_elements_for_concept-1) | [Test](../acceptance/tests/test_cross_domain.py#L60) |
-| Requested permissible-value uses represent the concept or selected descendants. | 2 | [`find_data_elements_for_concept-2`](specification.md#requirement-find_data_elements_for_concept-2) | [Test](../acceptance/tests/test_cross_domain.py#L88) |
-| Answers preserve both graph identities and dates and distinguish NCIt release from registry state. | 1 | [`find_data_elements_for_concept-3`](specification.md#requirement-find_data_elements_for_concept-3) | [Test](../acceptance/tests/test_cross_domain.py#L117) |
-| A requested release different from the NCIt graph is rejected. | 1 | [`find_data_elements_for_concept-4`](specification.md#requirement-find_data_elements_for_concept-4) | [Test](../acceptance/tests/test_cross_domain.py#L145) |
-| Concept-use queries reject unsupported terminologies. | 1 | [`find_data_elements_for_concept-4`](specification.md#requirement-find_data_elements_for_concept-4) | [Test](../acceptance/tests/test_cross_domain.py#L163) |
-| An oversized descendant-use result is bounded and reports at least the known omitted amount. | 1 | [`find_data_elements_for_concept-5`](specification.md#requirement-find_data_elements_for_concept-5) | [Test](../acceptance/tests/test_cross_domain.py#L171) |
+| Requested permissible-value uses represent the concept or selected descendants. | 2 | [`find_data_elements_for_concept-2`](specification.md#requirement-find_data_elements_for_concept-2) | [Test](../acceptance/tests/test_cross_domain.py#L89) |
+| Answers preserve both graph identities and dates and distinguish NCIt release from registry state. | 1 | [`find_data_elements_for_concept-3`](specification.md#requirement-find_data_elements_for_concept-3) | [Test](../acceptance/tests/test_cross_domain.py#L118) |
+| A requested release different from the NCIt graph is rejected. | 1 | [`find_data_elements_for_concept-4`](specification.md#requirement-find_data_elements_for_concept-4) | [Test](../acceptance/tests/test_cross_domain.py#L146) |
+| Concept-use queries reject unsupported terminologies. | 1 | [`find_data_elements_for_concept-4`](specification.md#requirement-find_data_elements_for_concept-4) | [Test](../acceptance/tests/test_cross_domain.py#L164) |
+| An oversized descendant-use result is bounded and reports at least the known omitted amount. | 1 | [`find_data_elements_for_concept-5`](specification.md#requirement-find_data_elements_for_concept-5) | [Test](../acceptance/tests/test_cross_domain.py#L172) |
 
 <details>
 <summary>Exact executable cases (8)</summary>
 
-- <code>acceptance/tests/test_cross_domain.py::test_a_release_other_than_the_ncit_graph_s_fails_closed</code> — [source](../acceptance/tests/test_cross_domain.py#L145)
-- <code>acceptance/tests/test_cross_domain.py::test_a_terminology_other_than_ncit_is_an_invalid_request</code> — [source](../acceptance/tests/test_cross_domain.py#L163)
-- <code>acceptance/tests/test_cross_domain.py::test_an_answer_of_the_shared_si_service_names_both_graphs_and_both_content_states</code> — [source](../acceptance/tests/test_cross_domain.py#L117)
-- <code>acceptance/tests/test_cross_domain.py::test_descendants_beyond_the_tool_s_maximum_are_truncated_with_how_much_was_left_out</code> — [source](../acceptance/tests/test_cross_domain.py#L171)
+- <code>acceptance/tests/test_cross_domain.py::test_a_release_other_than_the_ncit_graph_s_fails_closed</code> — [source](../acceptance/tests/test_cross_domain.py#L146)
+- <code>acceptance/tests/test_cross_domain.py::test_a_terminology_other_than_ncit_is_an_invalid_request</code> — [source](../acceptance/tests/test_cross_domain.py#L164)
+- <code>acceptance/tests/test_cross_domain.py::test_an_answer_of_the_shared_si_service_names_both_graphs_and_both_content_states</code> — [source](../acceptance/tests/test_cross_domain.py#L118)
+- <code>acceptance/tests/test_cross_domain.py::test_descendants_beyond_the_tool_s_maximum_are_truncated_with_how_much_was_left_out</code> — [source](../acceptance/tests/test_cross_domain.py#L172)
 - <code>acceptance/tests/test_cross_domain.py::test_the_data_elements_are_the_concept_s_and_with_expansion_its_descendants_too[False-data-elements-c17357]</code> — [source](../acceptance/tests/test_cross_domain.py#L60)
 - <code>acceptance/tests/test_cross_domain.py::test_the_data_elements_are_the_concept_s_and_with_expansion_its_descendants_too[True-data-elements-c17357-descendants]</code> — [source](../acceptance/tests/test_cross_domain.py#L60)
-- <code>acceptance/tests/test_cross_domain.py::test_with_the_flag_the_permissible_values_that_stand_for_the_concept_come_too[False-values-c17357]</code> — [source](../acceptance/tests/test_cross_domain.py#L88)
-- <code>acceptance/tests/test_cross_domain.py::test_with_the_flag_the_permissible_values_that_stand_for_the_concept_come_too[True-values-c17357-descendants]</code> — [source](../acceptance/tests/test_cross_domain.py#L88)
+- <code>acceptance/tests/test_cross_domain.py::test_with_the_flag_the_permissible_values_that_stand_for_the_concept_come_too[False-values-c17357]</code> — [source](../acceptance/tests/test_cross_domain.py#L89)
+- <code>acceptance/tests/test_cross_domain.py::test_with_the_flag_the_permissible_values_that_stand_for_the_concept_come_too[True-values-c17357-descendants]</code> — [source](../acceptance/tests/test_cross_domain.py#L89)
 
 </details>
 
@@ -1850,19 +1850,19 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| A permissible value resolves to its source concept and preserves terminology and registry provenance. | 1 | [`get_concept_for_permissible_value-1`](specification.md#requirement-get_concept_for_permissible_value-1) | [Test](../acceptance/tests/test_cross_domain.py#L234) |
-| Changed case, extra spaces and other nonmatching values are not silently normalized into a match. | 4 | [`get_concept_for_permissible_value-3`](specification.md#requirement-get_concept_for_permissible_value-3) | [Test](../acceptance/tests/test_cross_domain.py#L257) |
-| Unsupported retrieval by permissible-value identifier reports capability unavailable. | 1 | [`get_concept_for_permissible_value-2`](specification.md#requirement-get_concept_for_permissible_value-2) | [Test](../acceptance/tests/test_cross_domain.py#L274) |
+| A permissible value resolves to its source concept and preserves terminology and registry provenance. | 1 | [`get_concept_for_permissible_value-1`](specification.md#requirement-get_concept_for_permissible_value-1) | [Test](../acceptance/tests/test_cross_domain.py#L235) |
+| Changed case, extra spaces and other nonmatching values are not silently normalized into a match. | 4 | [`get_concept_for_permissible_value-3`](specification.md#requirement-get_concept_for_permissible_value-3) | [Test](../acceptance/tests/test_cross_domain.py#L258) |
+| Unsupported retrieval by permissible-value identifier reports capability unavailable. | 1 | [`get_concept_for_permissible_value-2`](specification.md#requirement-get_concept_for_permissible_value-2) | [Test](../acceptance/tests/test_cross_domain.py#L275) |
 
 <details>
 <summary>Exact executable cases (6)</summary>
 
-- <code>acceptance/tests/test_cross_domain.py::test_a_permissible_value_by_its_identifier_is_unavailable</code> — [source](../acceptance/tests/test_cross_domain.py#L274)
-- <code>acceptance/tests/test_cross_domain.py::test_a_value_resolves_to_the_concept_it_stands_for_naming_both_content_states</code> — [source](../acceptance/tests/test_cross_domain.py#L234)
-- <code>acceptance/tests/test_cross_domain.py::test_a_value_the_data_element_does_not_have_as_given_is_not_found[ Male]</code> — [source](../acceptance/tests/test_cross_domain.py#L257)
-- <code>acceptance/tests/test_cross_domain.py::test_a_value_the_data_element_does_not_have_as_given_is_not_found[MALE]</code> — [source](../acceptance/tests/test_cross_domain.py#L257)
-- <code>acceptance/tests/test_cross_domain.py::test_a_value_the_data_element_does_not_have_as_given_is_not_found[Male ]</code> — [source](../acceptance/tests/test_cross_domain.py#L257)
-- <code>acceptance/tests/test_cross_domain.py::test_a_value_the_data_element_does_not_have_as_given_is_not_found[male]</code> — [source](../acceptance/tests/test_cross_domain.py#L257)
+- <code>acceptance/tests/test_cross_domain.py::test_a_permissible_value_by_its_identifier_is_unavailable</code> — [source](../acceptance/tests/test_cross_domain.py#L275)
+- <code>acceptance/tests/test_cross_domain.py::test_a_value_resolves_to_the_concept_it_stands_for_naming_both_content_states</code> — [source](../acceptance/tests/test_cross_domain.py#L235)
+- <code>acceptance/tests/test_cross_domain.py::test_a_value_the_data_element_does_not_have_as_given_is_not_found[ Male]</code> — [source](../acceptance/tests/test_cross_domain.py#L258)
+- <code>acceptance/tests/test_cross_domain.py::test_a_value_the_data_element_does_not_have_as_given_is_not_found[MALE]</code> — [source](../acceptance/tests/test_cross_domain.py#L258)
+- <code>acceptance/tests/test_cross_domain.py::test_a_value_the_data_element_does_not_have_as_given_is_not_found[Male ]</code> — [source](../acceptance/tests/test_cross_domain.py#L258)
+- <code>acceptance/tests/test_cross_domain.py::test_a_value_the_data_element_does_not_have_as_given_is_not_found[male]</code> — [source](../acceptance/tests/test_cross_domain.py#L258)
 
 </details>
 
@@ -1880,16 +1880,16 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| GDC values come from the named mapset with matching release identity and asserted evidence. | 1 | [`resolve_stored_value-1`](specification.md#requirement-resolve_stored_value-1) | [Test](../acceptance/tests/test_cross_domain.py#L289) |
-| Other supported commons use the CRDC crosswalk and name each value's data element. | 1 | [`resolve_stored_value-2`](specification.md#requirement-resolve_stored_value-2) | [Test](../acceptance/tests/test_cross_domain.py#L342) |
-| Without value binding, no stored value is invented and the evidence states the limitation and lack of confidence. | 1 | [`resolve_stored_value-3`](specification.md#requirement-resolve_stored_value-3) | [Test](../acceptance/tests/test_cross_domain.py#L362) |
+| GDC values come from the named mapset with matching release identity and asserted evidence. | 1 | [`resolve_stored_value-1`](specification.md#requirement-resolve_stored_value-1) | [Test](../acceptance/tests/test_cross_domain.py#L290) |
+| Other supported commons use the CRDC crosswalk and name each value's data element. | 1 | [`resolve_stored_value-2`](specification.md#requirement-resolve_stored_value-2) | [Test](../acceptance/tests/test_cross_domain.py#L343) |
+| Without value binding, no stored value is invented and the evidence states the limitation and lack of confidence. | 1 | [`resolve_stored_value-3`](specification.md#requirement-resolve_stored_value-3) | [Test](../acceptance/tests/test_cross_domain.py#L363) |
 
 <details>
 <summary>Exact executable cases (3)</summary>
 
-- <code>acceptance/tests/test_cross_domain.py::test_a_commons_without_a_value_level_binding_stores_no_value_and_says_so</code> — [source](../acceptance/tests/test_cross_domain.py#L362)
-- <code>acceptance/tests/test_cross_domain.py::test_a_gdc_value_resolves_through_the_mapset_its_source_names</code> — [source](../acceptance/tests/test_cross_domain.py#L289)
-- <code>acceptance/tests/test_cross_domain.py::test_another_commons_value_resolves_through_the_crdc_crosswalk</code> — [source](../acceptance/tests/test_cross_domain.py#L342)
+- <code>acceptance/tests/test_cross_domain.py::test_a_commons_without_a_value_level_binding_stores_no_value_and_says_so</code> — [source](../acceptance/tests/test_cross_domain.py#L363)
+- <code>acceptance/tests/test_cross_domain.py::test_a_gdc_value_resolves_through_the_mapset_its_source_names</code> — [source](../acceptance/tests/test_cross_domain.py#L290)
+- <code>acceptance/tests/test_cross_domain.py::test_another_commons_value_resolves_through_the_crdc_crosswalk</code> — [source](../acceptance/tests/test_cross_domain.py#L343)
 
 </details>
 
@@ -1907,13 +1907,13 @@ This is an inventory, not a passing test report. [Run reports](../acceptance/REA
 
 | Behaviour checked | Cases | Requirements | Evidence |
 |---|---:|---|---|
-| Alignment preserves all dataset dates, calculates the largest interval and checks warning behaviour above the default threshold and below a larger explicit threshold. | 2 | [`get_release_alignment-1`](specification.md#requirement-get_release_alignment-1) | [Test](../acceptance/tests/test_cross_domain.py#L393) |
+| Alignment preserves all dataset dates, calculates the largest interval and checks warning behaviour above the default threshold and below a larger explicit threshold. | 2 | [`get_release_alignment-1`](specification.md#requirement-get_release_alignment-1) | [Test](../acceptance/tests/test_cross_domain.py#L394) |
 
 <details>
 <summary>Exact executable cases (2)</summary>
 
-- <code>acceptance/tests/test_cross_domain.py::test_every_dataset_is_dated_with_the_largest_interval_and_a_warning_above_the_threshold[120]</code> — [source](../acceptance/tests/test_cross_domain.py#L393)
-- <code>acceptance/tests/test_cross_domain.py::test_every_dataset_is_dated_with_the_largest_interval_and_a_warning_above_the_threshold[None]</code> — [source](../acceptance/tests/test_cross_domain.py#L393)
+- <code>acceptance/tests/test_cross_domain.py::test_every_dataset_is_dated_with_the_largest_interval_and_a_warning_above_the_threshold[120]</code> — [source](../acceptance/tests/test_cross_domain.py#L394)
+- <code>acceptance/tests/test_cross_domain.py::test_every_dataset_is_dated_with_the_largest_interval_and_a_warning_above_the_threshold[None]</code> — [source](../acceptance/tests/test_cross_domain.py#L394)
 
 </details>
 

@@ -461,8 +461,6 @@ def _valid_run_metadata(run: Any) -> bool:
 
 def drift(fixture: dict[str, Any], live: dict[str, Any]) -> int:
     """Report fixture passes that fail live; inputs have passed the completion guard."""
-    if live["tests"].keys() != fixture["tests"].keys():
-        raise SystemExit("the fixture and live reports select different tests; re-run them")
     changed = sorted(
         test
         for test, result in fixture["tests"].items()
@@ -478,6 +476,8 @@ def _live_report(fixture: dict[str, Any], path: Path) -> dict[str, Any]:
     live = load_report(path, "live")
     if live["suite"] != fixture["suite"]:
         raise SystemExit("the fixture and live reports come from different suites")
+    if live["tests"].keys() != fixture["tests"].keys():
+        raise SystemExit("the fixture and live reports select different tests; re-run them")
     return live
 
 

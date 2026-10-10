@@ -182,6 +182,8 @@ are valid evidence; an early stop or recovered worker crash is not. Rendering, r
 and update, live drift checking and the HTTP acceptance runner all use this guard. Reports
 without these fields must be rerun. `--check-complete fixture` (or `live`) validates without
 rendering; `--live live.json --drift` reports fixture passes that fail live and exits nonzero.
+Combined rendering and drift require both reports to select the same test IDs from the same
+suite; a complete subset cannot stand in for missing live evidence.
 
 The frozen Phase 5 snapshots are the archival exception: `scripts/upstream_requirements.py`
 checks their identical, nonempty 944-test sets and suite digest itself. Their historical JSON

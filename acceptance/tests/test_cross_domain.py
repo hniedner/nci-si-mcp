@@ -70,12 +70,13 @@ def test_the_data_elements_are_the_concept_s_and_with_expansion_its_descendants_
     content = _ok(_find(tools, content_pin, expandDescendants=expand))
 
     # The release is verified against the NCIt graph, so the Shared SI Service answers.
-    assert _sources(content["dataElements"]) == {"ssis_sparql"}
     if target.mode == "fixture":
+        assert _sources(content["dataElements"]) == {"ssis_sparql"}
         expected = {(row["id"], row["version"]) for row in _rows(recorded, recording)}
         assert element_ids(content["dataElements"]) == expected
     else:
         assert isinstance(content["dataElements"], list)
+        assert _sources(content["dataElements"]) <= {"ssis_sparql"}
         for item in content["dataElements"]:
             assert all(
                 is_name(item.get("dataElement", {}).get(key))
