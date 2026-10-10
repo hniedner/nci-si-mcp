@@ -52,6 +52,7 @@ class SmokeCommandTest(unittest.TestCase):
                     patch("sys.argv", ["container_smoke.py", "test-image"]),
                     patch.object(container_smoke, "failure"),
                     patch.object(container_smoke, "prepare", lifecycle.prepare),
+                    patch.object(container_smoke, "default_auth_refusal"),
                     patch.object(container_smoke, "serve", lifecycle.serve),
                     patch.object(container_smoke, "docker", lifecycle.docker),
                     redirect_stdout(output),

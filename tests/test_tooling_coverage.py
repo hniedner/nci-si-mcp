@@ -139,6 +139,29 @@ class SmokeEngine:
 
 
 class SmokeCleanupTest(unittest.TestCase):
+    def test_failed_docker_health_blocks_smoke_and_reaps_the_container(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "tmp").mkdir()
+            engine = SmokeEngine()
+
+            def docker(*args, **options):
+                if "{{.State.Health.Status}}" in args:
+                    return SimpleNamespace(stdout="unhealthy", stderr="")
+                return engine.docker(*args, **options)
+
+            with (
+                patch.object(container_smoke, "ROOT", root),
+                patch.object(container_smoke, "docker", docker),
+                patch.object(container_smoke, "wait_ready"),
+                patch.object(container_smoke, "request", return_value={"status": "ok"}),
+                patch.object(container_smoke, "surface"),
+                self.assertRaisesRegex(RuntimeError, "Docker health"),
+            ):
+                container_smoke.serve("image", root)
+            self.assertTrue(engine.removed)
+            self.assertFalse(engine.running)
+
     def test_failed_diagnostics_still_remove_the_owned_container(self):
         for failure_at in ("collect", "write"):
             with self.subTest(failure_at=failure_at), TemporaryDirectory() as directory:
@@ -175,6 +198,7 @@ class SmokeCleanupTest(unittest.TestCase):
                     patch.object(container_smoke, "ROOT", root),
                     patch.object(container_smoke, "docker", engine.docker),
                     patch.object(container_smoke, "wait_ready"),
+                    patch.object(container_smoke, "wait_healthy"),
                     patch.object(container_smoke, "request", return_value=health),
                     patch.object(container_smoke, "surface"),
                     self.assertRaisesRegex(RuntimeError, message),

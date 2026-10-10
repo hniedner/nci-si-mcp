@@ -2,9 +2,9 @@
 
 The prototype image is cloud-neutral and CPU-only, initially Linux amd64. Cloud One's
 production design remains with the hosting team: no AWS credentials, roles, infrastructure
-or identity provider are configured here. The default image accepts **unauthenticated
-clients** and must remain on a private network until the approved identity integration is
-configured through the [transport hooks](transport.md#authentication-and-authorization-hooks).
+or identity provider are configured here. The default image **requires authentication** and
+refuses startup without the approved identity integration configured through the
+[transport hooks](transport.md#authentication-and-authorization-hooks).
 The [deployment diagrams](deployment.md) show local stdio, a local container, and the proposed
 Cloud One layout, including storage, network and session boundaries.
 
@@ -33,17 +33,28 @@ docker run --rm --read-only --stop-timeout 20 --cap-drop=ALL --security-opt=no-n
   --env-file "$SERVER_ENV" "$IMAGE_DIGEST"
 ```
 
-The environment file is supplied by the operator, never built into the image. Set the
+The environment file is supplied by the operator, never built into the image. It must configure
+the approved `NCI_SI_HTTP_AUTH_FACTORY` integration, or explicitly set
+`NCI_SI_HTTP_AUTH_MODE=trusted-local` for a trusted local deployment with loopback-only publishing
+(`-p 127.0.0.1:...`, as above). Otherwise startup refuses before listening with
+`Required HTTP authentication needs an installed integration factory`. Host allow-lists are
+not authentication: a reachable client can supply an allowed Host header. Set the
 model identity, upstream endpoints/credentials and the public Host/Origin allow-lists
 from [QUICKSTART](../QUICKSTART.md#settings). The model needs no download access; runtime
 upstream requests still need egress to their configured origins. No live caDSR capability
-is claimed before credentials are issued.
+requiring CDE Match or the lists-of-values API is claimed before credentials are issued.
 
-The image presets HTTP on `0.0.0.0:8000`, stateless sessions and required-index readiness.
+The image presets HTTP on `0.0.0.0:8000`, required authentication, stateless sessions and
+required-index readiness.
 All are environment defaults that operators can override; the application's ordinary
 defaults remain unchanged. Bind address does not disable Host/Origin checks. `/health`
 checks the serving process; `/ready` verifies the active index and model locally. Neither
-asserts upstream availability. JSON diagnostics go to stderr, collected by container log
+asserts upstream availability. The image's HEALTHCHECK requests `/health`; local compose uses
+`/ready` instead. Both use the configured HTTP port, a three-second request bound, 30-second
+interval, five-second probe timeout, 180-second startup grace and three retries. The startup
+grace matches the smoke's model/index startup allowance; increase it for larger cold assets.
+If overriding `NCI_SI_HTTP_ALLOWED_HOSTS`, retain `127.0.0.1:*` for these internal probes; they do
+not bypass Host admission or need credentials. JSON diagnostics go to stderr, collected by container log
 drivers; stdout remains reserved for MCP when stdio is explicitly selected.
 
 Stateless calls can reach any replica and resolve omitted NCIt releases per call. Name a
@@ -92,10 +103,12 @@ the image scan. [Publication recovery](#scan-policy-and-publication) is describe
 
 Run `pdm build --no-sdist` in a tagged checkout, then
 `docker build --platform linux/amd64 -t nci-si-mcp:local .`.
+With Podman, use `podman build --format docker` to preserve the image health check.
 Keep exactly one current wheel in `dist/`. Run
 `pdm run python scripts/container_smoke.py nci-si-mcp:local` to check the image with an
 external, test-only model and a recorded concept. CI builds the same wheel/image and runs
-the same smoke check. This is packaging evidence, not production retrieval calibration.
+the same smoke check, including default-auth refusal, explicit local serving and Docker's
+healthy status. This is packaging evidence, not production retrieval calibration.
 
 The image uses a digest-pinned Amazon Linux 2023 base, refreshes OS packages and installs
 its `python3.14` package. The builder creates a virtual environment on the same base and
