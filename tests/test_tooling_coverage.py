@@ -198,6 +198,7 @@ class SmokeCleanupTest(unittest.TestCase):
                     patch.object(container_smoke, "ROOT", root),
                     patch.object(container_smoke, "docker", engine.docker),
                     patch.object(container_smoke, "wait_ready"),
+                    patch.object(container_smoke, "wait_healthy"),
                     patch.object(container_smoke, "request", return_value=health),
                     patch.object(container_smoke, "surface"),
                     self.assertRaisesRegex(RuntimeError, message),

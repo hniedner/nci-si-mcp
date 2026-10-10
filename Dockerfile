@@ -31,9 +31,13 @@ ENV PATH=/opt/venv/bin:$PATH \
     NCI_SI_EMBEDDING_PROVIDER=sentence-transformers \
     NCI_SI_TRANSPORT=streamable-http \
     NCI_SI_HTTP_HOST=0.0.0.0 \
+    NCI_SI_HTTP_AUTH_MODE=required \
     NCI_SI_HTTP_SESSIONS=stateless \
     NCI_SI_HTTP_REQUIRE_INDEX=1
 USER 65532:65532
 EXPOSE 8000
 STOPSIGNAL SIGTERM
+# Allow 180s for the external model/index cold start, matching the smoke startup bound.
+# Thereafter three failures at 30s intervals mark unhealthy; each request has a 3s bound.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=180s --retries=3 CMD ["python", "-c", "import os, urllib.request; urllib.request.urlopen('http://127.0.0.1:' + os.getenv('NCI_SI_HTTP_PORT', '8000') + '/health', timeout=3).close()"]
 ENTRYPOINT ["/opt/venv/bin/python", "-m", "nci_si_mcp.container_entry"]

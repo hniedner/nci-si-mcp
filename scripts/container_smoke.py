@@ -48,6 +48,8 @@ def mounted(image: str, assets: Path, *args: str) -> list[str]:
         "NCI_SI_DATA_DIR=/assets/data",
         "-e",
         "NCI_SI_EMBEDDING_MODEL=/assets/model",
+        "-e",
+        "NCI_SI_HTTP_AUTH_MODE=trusted-local",
         *args,
         image,
     ]
@@ -88,6 +90,31 @@ def request(port: int, path: str) -> dict:
     url = f"http://127.0.0.1:{port}{path}"
     with urllib.request.urlopen(url, timeout=5) as response:
         return json.load(response)
+
+
+def default_auth_refusal(image: str, assets: Path) -> None:
+    name = "nci-si-auth-" + uuid.uuid4().hex
+    command = mounted(image, assets, "--name", name, "--network", "none")
+    explicit = command.index("NCI_SI_HTTP_AUTH_MODE=trusted-local")
+    del command[explicit - 1 : explicit + 1]  # Exercise the image default, not the smoke opt-out.
+    try:
+        result = docker(*command, check=False)
+        if result.returncode == 0 or "Required HTTP authentication needs" not in result.stderr:
+            raise RuntimeError("Image did not refuse startup without its auth integration")
+    finally:
+        docker("rm", "-f", name, check=False)
+
+
+def wait_healthy(name: str) -> None:
+    deadline = time.monotonic() + 180
+    while time.monotonic() < deadline:
+        status = docker("inspect", "--format", "{{.State.Health.Status}}", name).stdout.strip()
+        if status == "healthy":
+            return
+        if status != "starting":
+            raise RuntimeError(f"Docker health is {status}, not healthy")
+        time.sleep(1)
+    raise RuntimeError("Docker health did not become healthy within 180 seconds")
 
 
 def wait_ready(port: int) -> None:
@@ -139,6 +166,7 @@ def serve(image: str, assets: Path) -> None:
         if request(port, "/health") != {"status": "ok"}:
             raise RuntimeError("Health endpoint failed")
         asyncio.run(surface(port, assets))
+        wait_healthy(name)
         docker("stop", "--time", "20", name)
         if docker("inspect", "--format", "{{.State.ExitCode}}", name).stdout.strip() != "0":
             raise RuntimeError("Container did not stop gracefully")
@@ -176,6 +204,7 @@ def main() -> None:
         try:
             failure(args.image, assets, "index")
             prepare(args.image, assets)
+            default_auth_refusal(args.image, assets)
             failure(args.image, assets, "index", "-e", "NCI_SI_EMBEDDING_MODEL=wrong-model")
             serve(args.image, assets)
             retained_builds(args.image, assets)
