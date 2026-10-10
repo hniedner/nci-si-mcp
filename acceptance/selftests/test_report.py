@@ -295,7 +295,7 @@ def test_the_rendered_report_states_its_modes_counts_and_what_proves_nothing_yet
 
 
 def test_the_command_combines_the_runs_with_per_test_limitations(tmp_path, capsys):
-    fixture = run({"get_form": "PASS"})
+    fixture = run({"get_form": "PASS"}, {"t.py::form": live_test("get_form", "passed")})
     live = run({}, {"t.py::form": live_test("get_form", "failed")}) | {
         "mode": "live",
         "transport": "streamable-http",
@@ -347,7 +347,8 @@ def test_the_command_refuses_a_report_of_the_wrong_run_mode(tmp_path):
 
 def test_an_empty_limitations_file_excuses_nothing(tmp_path, capsys):
     live = run({}, {"t.py::form": live_test("get_form", "failed")}) | {"mode": "live"}
-    (tmp_path / "fixture.json").write_text(json.dumps(run({"get_form": "PASS"})), encoding="utf-8")
+    fixture = run({"get_form": "PASS"}, {"t.py::form": live_test("get_form", "passed")})
+    (tmp_path / "fixture.json").write_text(json.dumps(fixture), encoding="utf-8")
     (tmp_path / "live.json").write_text(json.dumps(live), encoding="utf-8")
     (tmp_path / "limitations.yaml").write_text("", encoding="utf-8")
 
@@ -378,7 +379,8 @@ def test_the_command_says_a_fixture_run_alone_is_not_the_final_outcome(tmp_path,
 def test_live_failures_are_not_excused_when_no_limitations_file_is_supplied(tmp_path, capsys):
     fixture = tmp_path / "fixture.json"
     live = tmp_path / "live.json"
-    fixture.write_text(json.dumps(run({"get_form": "PASS"})), encoding="utf-8")
+    passed = run({"get_form": "PASS"}, {"t.py::form": live_test("get_form", "passed")})
+    fixture.write_text(json.dumps(passed), encoding="utf-8")
     failed = run({}, {"t.py::form": live_test("get_form", "failed")}) | {"mode": "live"}
     live.write_text(json.dumps(failed), encoding="utf-8")
 

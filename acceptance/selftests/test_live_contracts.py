@@ -265,11 +265,13 @@ def live_suite(compliant, monkeypatch):
     return compliant
 
 
-def run_family(suite, family, malformed=False):
+def run_family(suite, family, malformed=False, replacement=None):
     responses = deepcopy(replies())
     for row in responses:
         if malformed and row["family"] == family:
             row["result"] = row["broken"]
+        if replacement is not None and row["family"] == family:
+            row["result"] = replacement
     (suite.path / "replies.json").write_text(json.dumps(responses))
     module, function = FAMILIES[family]
     result = suite.runpytest_subprocess(
@@ -303,3 +305,24 @@ def test_live_checks_reject_malformed_content(live_suite, family):
         for node, value in outcomes.items()
     )
     assert result.ret == 1
+
+
+@pytest.mark.parametrize("content", [{}, {"relationships": None}, {"relationships": 42}])
+def test_live_catalogue_refuses_a_missing_or_non_list_container(live_suite, content):
+    result, outcomes = run_family(live_suite, "relationships", replacement=content)
+    assert outcomes and set(outcomes.values()) == {"failed"}
+    assert result.ret == 1
+
+
+@pytest.mark.parametrize(
+    ("family", "content"),
+    [
+        ("maps", {"mappings": []}),
+        ("relationships", {"relationships": []}),
+        ("cross-domain", {"dataElements": []}),
+    ],
+)
+def test_live_content_accepts_valid_empty_lists(live_suite, family, content):
+    result, outcomes = run_family(live_suite, family, replacement=content)
+    assert outcomes and set(outcomes.values()) == {"passed"}
+    assert result.ret == 0

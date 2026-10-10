@@ -125,12 +125,15 @@ def complete(compliant):
 
 
 @pytest.mark.parametrize("operation", ["check", "update"])
-def test_the_ratchet_refuses_an_aborted_fixture_report_without_rewriting_it(complete, operation):
+@pytest.mark.parametrize("finished", [8, 9], ids=["unfinished", "unrecorded"])
+def test_the_ratchet_refuses_an_aborted_fixture_report_without_rewriting_it(
+    complete, operation, finished
+):
     path, report = complete
     expected = path.with_name("expected.json")
     expected.write_text('{"keep-this-evidence": "passed"}\n')
     original = expected.read_bytes()
-    report["run"] = {"exit_status": 1, "selected": 9, "finished": 8, "worker_crashes": 0}
+    report["run"] = {"exit_status": 1, "selected": 9, "finished": finished, "worker_crashes": 0}
     path.write_text(json.dumps(report))
 
     refused = command("expected", operation, path, "--expected", expected)
@@ -222,6 +225,21 @@ def test_drift_reports_only_fixture_passes_that_fail_live(complete):
         "1 tests pass on the fixtures and fail live.\n- `tests/test_completion.py::test_probe[1]`\n"
     )
     assert drift.returncode == 1
+
+
+@pytest.mark.parametrize("options", [(), ("--drift",)], ids=["combined", "drift"])
+def test_combined_consumers_refuse_different_complete_selections(compliant, monkeypatch, options):
+    _, path, _ = produce(compliant)
+    fixture = path.with_name("fixture.json")
+    fixture.write_bytes(path.read_bytes())
+    monkeypatch.setenv("NCI_SI_ACCEPTANCE_MODE", "live")
+    _, live, _ = produce(compliant, "--deselect=tests/test_completion.py::test_probe[1]")
+
+    refused = command("report", fixture, "--live", live, *options)
+
+    assert "reports select different tests; re-run them" in refused.stderr
+    assert refused.returncode != 0
+    assert "Tests run and not passing:" not in refused.stdout
 
 
 @pytest.mark.parametrize("mode", ["fixture", "live"])
