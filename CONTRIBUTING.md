@@ -97,7 +97,8 @@ fixtures verify contracts, including crafted caDSR responses; they do not establ
 upstream support. Some caDSR endpoints permit anonymous access; protected endpoints require
 issued credentials. The separate live workflow checks only cases marked `live_capable` and
 does not treat skipped cases as drift. It covers protocol/discovery, selected local validation
-and unavailable-capability contracts, and one bounded discovered-release concept lookup.
+and unavailable-capability contracts, and bounded EVS, anonymous CDE and cross-domain content
+checks; [the suite README](acceptance/README.md#writing-a-test) maintains the exact live scope.
 Validation refusals are not evidence of working upstream retrieval; credentials alone do not
 enable the fixture-only cases. This remains limited live coverage, not full content conformance.
 

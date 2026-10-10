@@ -411,11 +411,12 @@ def test_without_a_prepare_command_a_test_that_needs_it_is_not_run(suite):
 
 
 @pytest.mark.parametrize(
-    ("script", "said"),
+    ("script", "said", "outcome"),
     [
         (
-            "import sys\nsys.stderr.write('no index built\\n')\nraise SystemExit(3)",
+            "import sys\nsys.stderr.write('x' * 3000 + 'no index built\\n')\nraise SystemExit(3)",
             "*no index built*",
+            "failed",
         ),
         (
             "import os, urllib.request\n"
@@ -423,17 +424,56 @@ def test_without_a_prepare_command_a_test_that_needs_it_is_not_run(suite):
             "try: urllib.request.urlopen(url)\n"
             "except OSError: pass\n",
             "*upstream requests without a fixture while preparing*",
+            "no_fixture",
         ),
     ],
     ids=["failing", "unanswered"],
 )
-def test_a_prepare_command_that_fails_or_asks_without_a_fixture_ends_the_run(
-    suite, monkeypatch, script, said
+@pytest.mark.parametrize("workers", [0, 2])
+def test_a_prepare_command_failure_is_reported_for_each_dependent_test(
+    suite, monkeypatch, script, said, outcome, workers
 ):
     prepare(suite, monkeypatch, script)
 
-    result = run(suite, PREPARED_PROBE)
+    result = run(suite, PREPARED_PROBE, "-n", str(workers), "--report=report.json")
 
-    assert result.ret != 0
-    result.assert_outcomes()
+    report = json.loads((suite.path / "report.json").read_text(encoding="utf-8"))
+    assert {node: test["outcome"] for node, test in report["tests"].items()} == {
+        "tests/test_probe.py::test_shared": outcome,
+        "tests/test_probe.py::test_own": outcome,
+        "tests/test_probe.py::test_unprepared": outcome,
+    }
+    unmatched = ["GET evs /api/v1/metadata/terminologies {}"] if outcome == "no_fixture" else []
+    assert all(test["unmatched"] == unmatched for test in report["tests"].values())
+    assert report["tools"]["list_terminologies"]["outcome"] == (
+        "NO FIXTURE" if unmatched else "FAIL"
+    )
+    assert result.ret == 1
+    result.assert_outcomes(errors=3)
     result.stdout.fnmatch_lines([said])
+
+
+@pytest.mark.parametrize("workers", [0, 2])
+def test_a_live_prepare_failure_is_reported_without_aborting_the_run(suite, monkeypatch, workers):
+    prepare(suite, monkeypatch, "raise SystemExit('live preparation unavailable')")
+    monkeypatch.setenv("NCI_SI_ACCEPTANCE_MODE", "live")
+    test = (
+        PROBE.format(marker="@pytest.mark.live_capable")
+        + """
+@pytest.mark.live_capable
+@pytest.mark.gate
+def test_independent():
+    assert 2 + 2 == 4
+"""
+    )
+
+    result = run(suite, test, "-n", str(workers), "--report=report.json")
+
+    report = json.loads((suite.path / "report.json").read_text(encoding="utf-8"))
+    assert {node: test["outcome"] for node, test in report["tests"].items()} == {
+        "tests/test_probe.py::test_probe": "failed",
+        "tests/test_probe.py::test_independent": "passed",
+    }
+    result.assert_outcomes(passed=1, errors=1)
+    assert result.ret == 1
+    result.stdout.fnmatch_lines(["*live preparation unavailable*"])

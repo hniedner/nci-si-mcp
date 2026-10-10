@@ -69,7 +69,68 @@ def project(native=None, context=None, **changes):
     return project_acceptance(encoded(metadata), raw, **context)
 
 
+def missing_report():
+    context = bundle()
+    metadata = envelope(state="unavailable", exit_code=None, report_sha256=None)
+    metadata.update(
+        {name + "_sha256": hashlib.sha256(data).hexdigest() for name, data in context.items()}
+    )
+    return project_acceptance(encoded(metadata), None, **context)
+
+
 class AcceptanceProjectionTest(unittest.TestCase):
+    def test_unknown_report_fields_are_rejected(self):
+        with self.assertRaises(EvidenceError):
+            project(report() | {"extra": True})
+
+    def test_missing_report_fields_are_validation_errors(self):
+        native = report()
+        del native["mode"]
+        with self.assertRaises(EvidenceError):
+            project(native)
+
+    def test_a_list_of_report_field_names_is_not_a_report(self):
+        with self.assertRaises(EvidenceError):
+            project(list(report()))
+
+    def test_a_fresh_report_with_completion_evidence_is_projected(self):
+        native = report() | {
+            "run": {"exit_status": 0, "selected": 2, "finished": 2, "worker_crashes": 0}
+        }
+        try:
+            result = project(native)
+        except EvidenceError as error:
+            self.fail(f"Fresh report rejected by the projection: {error}")
+        self.assertTrue(result["inventory_complete"])
+        self.assertEqual(result["counts"], {"passed": 2})
+        self.assertEqual(result["tools"]["lookup"]["outcome"], "PASS")
+
+    def test_all_recorded_cases_do_not_override_a_crash_or_interrupted_status(self):
+        for status, crashes in ((0, 1), (2, 0)):
+            native = report() | {
+                "run": {
+                    "exit_status": status,
+                    "selected": 2,
+                    "finished": 2,
+                    "worker_crashes": crashes,
+                }
+            }
+            with self.subTest(status=status, crashes=crashes):
+                result = project(native)
+                self.assertFalse(result["inventory_complete"])
+                self.assertEqual(result["missing"], [])
+                self.assertEqual(result["counts"], {"passed": 2})
+
+    def test_run_completion_does_not_override_the_bound_selection(self):
+        native = report() | {
+            "run": {"exit_status": 0, "selected": 1, "finished": 1, "worker_crashes": 0}
+        }
+        del native["tests"]["tests/test_example.py::test_protocol"]
+        result = project(native)
+        self.assertFalse(result["inventory_complete"])
+        self.assertEqual(len(result["missing"]), 1)
+        self.assertEqual(result["counts"], {"passed": 1})
+
     def test_a_report_without_the_alias_field_keeps_its_verdict(self):
         native = report()
         self.assertNotIn("implemented_as", native["tools"]["lookup"])
@@ -202,12 +263,7 @@ class AcceptanceProjectionTest(unittest.TestCase):
                 project_acceptance(encoded(metadata), raw, **changed)
 
     def test_missing_report_preserves_execution_without_inventing_test_counts(self):
-        context = bundle()
-        metadata = envelope(state="unavailable", exit_code=None, report_sha256=None)
-        metadata.update(
-            {name + "_sha256": hashlib.sha256(data).hexdigest() for name, data in context.items()}
-        )
-        result = project_acceptance(encoded(metadata), None, **context)
+        result = missing_report()
         self.assertIsNone(result["counts"])
         self.assertFalse(result["inventory_complete"])
         self.assertEqual(len(result["missing"]), 2)

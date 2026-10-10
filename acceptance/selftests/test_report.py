@@ -208,6 +208,12 @@ def run(outcomes, tests=None):
     return {
         "mode": "fixture",
         "transport": "stdio",
+        "run": {
+            "exit_status": 0,
+            "selected": len(tests or {}),
+            "finished": len(tests or {}),
+            "worker_crashes": 0,
+        },
         "failed_gates": [],
         "unrun_gates": [],
         "tools_list_bytes": None,
@@ -289,7 +295,7 @@ def test_the_rendered_report_states_its_modes_counts_and_what_proves_nothing_yet
 
 
 def test_the_command_combines_the_runs_with_per_test_limitations(tmp_path, capsys):
-    fixture = run({"get_form": "PASS"})
+    fixture = run({"get_form": "PASS"}, {"t.py::form": live_test("get_form", "passed")})
     live = run({}, {"t.py::form": live_test("get_form", "failed")}) | {
         "mode": "live",
         "transport": "streamable-http",
@@ -335,13 +341,14 @@ def test_the_command_refuses_reports_that_differ_only_in_the_fixture_set(tmp_pat
 def test_the_command_refuses_a_report_of_the_wrong_run_mode(tmp_path):
     (tmp_path / "fixture.json").write_text(json.dumps(run({})), encoding="utf-8")
 
-    with pytest.raises(SystemExit, match="is the report of a fixture run, not of a live run"):
+    with pytest.raises(SystemExit, match="is the report of a fixture run, not a live run"):
         main([str(tmp_path / "fixture.json"), "--live", str(tmp_path / "fixture.json")])
 
 
 def test_an_empty_limitations_file_excuses_nothing(tmp_path, capsys):
     live = run({}, {"t.py::form": live_test("get_form", "failed")}) | {"mode": "live"}
-    (tmp_path / "fixture.json").write_text(json.dumps(run({"get_form": "PASS"})), encoding="utf-8")
+    fixture = run({"get_form": "PASS"}, {"t.py::form": live_test("get_form", "passed")})
+    (tmp_path / "fixture.json").write_text(json.dumps(fixture), encoding="utf-8")
     (tmp_path / "live.json").write_text(json.dumps(live), encoding="utf-8")
     (tmp_path / "limitations.yaml").write_text("", encoding="utf-8")
 
@@ -372,7 +379,8 @@ def test_the_command_says_a_fixture_run_alone_is_not_the_final_outcome(tmp_path,
 def test_live_failures_are_not_excused_when_no_limitations_file_is_supplied(tmp_path, capsys):
     fixture = tmp_path / "fixture.json"
     live = tmp_path / "live.json"
-    fixture.write_text(json.dumps(run({"get_form": "PASS"})), encoding="utf-8")
+    passed = run({"get_form": "PASS"}, {"t.py::form": live_test("get_form", "passed")})
+    fixture.write_text(json.dumps(passed), encoding="utf-8")
     failed = run({}, {"t.py::form": live_test("get_form", "failed")}) | {"mode": "live"}
     live.write_text(json.dumps(failed), encoding="utf-8")
 
@@ -476,13 +484,15 @@ def test_what_a_worker_noted_of_the_server_reaches_the_controller_once():
     worker = Collector()
     worker.note_tools(SimpleNamespace(implemented=lambda name: True, listing_bytes=4096))
     output = {}
-    worker.pytest_sessionfinish(SimpleNamespace(config=SimpleNamespace(workeroutput=output)))
+    worker.pytest_sessionfinish(
+        SimpleNamespace(config=SimpleNamespace(workeroutput=output), testscollected=0), 0
+    )
     controller = Collector()
 
-    controller.pytest_testnodedown(SimpleNamespace(workeroutput=output))
-    controller.pytest_testnodedown(SimpleNamespace(workeroutput={}))
+    controller.pytest_testnodedown(SimpleNamespace(workeroutput=output), None)
+    controller.pytest_testnodedown(SimpleNamespace(workeroutput={}), None)
     controller.pytest_testnodedown(
-        SimpleNamespace(workeroutput={WORKER_TOOLS: {"implemented": {}, "listing_bytes": 1}})
+        SimpleNamespace(workeroutput={WORKER_TOOLS: {"implemented": {}, "listing_bytes": 1}}), None
     )
 
     assert (controller.listing_bytes, controller.implemented) == (
@@ -494,6 +504,8 @@ def test_what_a_worker_noted_of_the_server_reaches_the_controller_once():
 def test_a_worker_that_started_no_server_forwards_nothing():
     output = {}
 
-    Collector().pytest_sessionfinish(SimpleNamespace(config=SimpleNamespace(workeroutput=output)))
+    Collector().pytest_sessionfinish(
+        SimpleNamespace(config=SimpleNamespace(workeroutput=output), testscollected=0), 0
+    )
 
     assert output == {}

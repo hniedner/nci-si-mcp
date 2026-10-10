@@ -138,10 +138,10 @@ records their reproduction evidence and affected cases separately; a skipped liv
 is never recast as a passed live test. Representative benchmark results supplement the
 acceptance evidence and do not replace its assertions.
 
-The current suite additionally runs ten caDSR local-validation/unavailable-capability cases,
-the release-cache check, and one bounded discovery-to-concept lookup in live mode. These are
-distinct kinds of evidence: local refusals do not establish upstream access, while the concept
-journey requires successful content with the discovered release and matching provenance.
+The current suite also checks local validation, release caching and bounded EVS, anonymous CDE
+and cross-domain content live; [the suite README](../acceptance/README.md#writing-a-test)
+maintains the exact scope. Local refusals do not establish upstream access; content checks
+require successful responses and the requested identity and release provenance.
 Read the run's exact counts and skipped cases; the historical Phase 5 reports are unchanged.
 
 The [evidence directory](evidence/phase-5/README.md) holds the measured samples and acceptance reports.

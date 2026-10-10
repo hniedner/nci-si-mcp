@@ -9,7 +9,7 @@ from scripts.portal_help import help_page
 from scripts.portal_job_views import jobs_page
 from scripts.portal_views import comparison_page, history_page, page, run_page
 
-from test_evidence_acceptance import project
+from test_evidence_acceptance import missing_report, project, report
 from test_evidence_benchmark import project as benchmark_projection
 from test_evidence_benchmark import selected_projection
 
@@ -125,6 +125,82 @@ class PortalViewsTest(unittest.TestCase):
         self.assertIn("0 of 2 cases", html)
         self.assertNotIn("<script>CANARY", html)
         self.assertIn("&lt;script&gt;CANARY", html)
+
+    def test_a_fresh_partial_run_shows_cases_but_no_tool_verdicts(self):
+        native = report() | {
+            "run": {"exit_status": 1, "selected": 2, "finished": 1, "worker_crashes": 0}
+        }
+        del native["tests"]["tests/test_example.py::test_protocol"]
+        evidence = project(native, state="failed", exit_code=1)
+        html = run_page(self.record(evidence), tool="lookup")
+
+        self.assertFalse("Tool verdicts" in html, "Incomplete run exposed tool verdicts")
+        self.assertIn(
+            "Incomplete run; selected cases without an outcome: 1; no verdict shown", html
+        )
+        self.assertIn("<caption>Acceptance cases</caption>", html)
+        self.assertIn("<td>passed</td>", html)
+        self.assertIn("1 of 2 cases", html)
+        self.assertNotIn("<td>PASS</td>", html)
+        self.assertNotIn("No report was produced", html)
+
+    def test_an_absent_report_is_named_on_the_run_page(self):
+        html = run_page(self.record(missing_report()))
+        self.assertIn("No report was produced", html)
+        self.assertNotIn("<caption>Tool verdicts</caption>", html)
+
+    def test_an_older_partial_report_names_a_reason(self):
+        native = report()
+        del native["tests"]["tests/test_example.py::test_protocol"]
+        html = run_page(self.record(project(native, state="failed", exit_code=1)))
+        self.assertTrue(
+            "no verdict shown. selected cases without an outcome." in html,
+            "Older partial evidence must explain the missing outcomes, not just its state",
+        )
+        self.assertIn("selected cases without an outcome: 1", html)
+
+    def test_a_complete_failing_run_keeps_its_tool_verdicts(self):
+        native = report() | {
+            "run": {"exit_status": 1, "selected": 2, "finished": 2, "worker_crashes": 0}
+        }
+        native["tests"]["tests/test_example.py::test_lookup"]["outcome"] = "failed"
+        native["tools"]["lookup"].update(outcome="FAIL", counts={"failed": 1})
+        evidence = project(native, state="failed", exit_code=1)
+        self.assertTrue(evidence["inventory_complete"])
+        html = run_page(self.record(evidence))
+        self.assertIn("<caption>Tool verdicts</caption>", html)
+        self.assertIn("<td>FAIL</td>", html)
+        self.assertNotIn("no verdict shown", html)
+
+    def test_crashed_or_interrupted_fresh_runs_have_no_verdict_even_with_all_cases(self):
+        for status, crashes, reason in (
+            (1, 1, "worker crashes: 1"),
+            (2, 0, "run exit status: 2"),
+        ):
+            native = report() | {
+                "run": {
+                    "exit_status": status,
+                    "selected": 2,
+                    "finished": 2,
+                    "worker_crashes": crashes,
+                }
+            }
+            with self.subTest(status=status, crashes=crashes):
+                html = run_page(self.record(project(native, state="failed", exit_code=status)))
+                self.assertFalse("Tool verdicts" in html, "Incomplete run exposed tool verdicts")
+                self.assertTrue(reason in html, "The page must name the run completion failure")
+                self.assertIn("selected cases without an outcome: 0; no verdict shown", html)
+                self.assertIn("<caption>Acceptance cases</caption>", html)
+                self.assertNotIn("<td>PASS</td>", html)
+
+    def test_a_complete_fresh_run_keeps_its_tool_verdicts(self):
+        native = report() | {
+            "run": {"exit_status": 0, "selected": 2, "finished": 2, "worker_crashes": 0}
+        }
+        html = run_page(self.record(project(native)))
+        self.assertIn("<caption>Tool verdicts</caption>", html)
+        self.assertIn("<td>PASS</td>", html)
+        self.assertNotIn("no verdict shown", html)
 
     def test_unverified_legacy_report_has_no_results_or_pass_claim(self):
         record = {

@@ -212,13 +212,23 @@ def _acceptance(evidence: dict[str, Any], tool: str, story: str) -> str:
         '<p class="help-link"><a href="/help#acceptance">Understand verdicts and filters</a></p>'
     )
     tools = evidence["tools"]
-    if tools is None:
-        body += "<p>No report was produced; no outcome is inferred.</p>"
-    else:
+    if evidence["inventory_complete"]:
         body += _table(
             "Tool verdicts",
             ["Tool", "Native verdict", "Gate-only failure"],
             [[name, row["outcome"], row["gates_only"]] for name, row in tools.items()],
+        )
+    else:
+        absent = "No report was produced. " if tools is None else ""
+        reason = evidence.get("completion_problem") or (
+            "selected cases without an outcome"
+            if evidence["missing"]
+            else f"run state: {evidence['state']}"
+        )
+        body += (
+            f"<p>{absent}Incomplete run; selected cases without an outcome: "
+            f"{len(evidence['missing'])}; no verdict shown. "
+            f"{text(reason)}.</p>"
         )
     body += _table(
         "Acceptance cases",

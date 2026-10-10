@@ -84,13 +84,21 @@ upstream requests it made while it started. A test marked
 `live_capable` also runs in live mode, unless it selects a scenario; every other test runs
 against fixtures only.
 
-Live coverage includes protocol/discovery checks, ten caDSR argument-validation or declared
-capability cases that need neither credentials nor upstream content, and release-cache
-metadata. One bounded content journey discovers the current monthly NCIt release and retrieves
-`C4817`, checking its identity and provenance against that discovered release. It makes two MCP
-calls and prepares no index. Errors, empty content and mismatched provenance fail that journey;
-they are not accepted as alternatives to success. These checks do not certify all tool modes
-or caDSR content access. The report retains every fixture-only case as not run in live mode.
+Live coverage has 46 marked cases out of 965; 45 can run live, since the retired-concept
+scenario remains fixture-only. Alongside protocol, discovery, argument and cache checks,
+content checks discover the current monthly NCIt release for concept identity, includes,
+paths, maps, relationship catalogues and cross-domain CDE discovery. They check contracts
+and matching release provenance, not historical names, counts or order; fixture mode retains
+the exact recorded comparisons. These bounded calls prepare no index. Upstream errors and
+mismatched provenance fail, never become `not_live`.
+
+Both CDE identity/version and include families run anonymously. Their five sections come
+from the data element API's DataElement response (ValueDomain, DataElementConcept,
+AlternateNames and ClassificationSchemes), not CDE Match or the credentialed lists-of-values
+API. The calls are unpinned registry reads; an explicit version is the CDE's own, never an
+NCIt release or an export date, so these cases need no registry-release discovery. Operations
+that need credentials remain fixture-only. This coverage does not certify all tool modes;
+the report retains every fixture-only case as not run in live mode.
 
 A test that passes against fixtures and fails live means a fixture is wrong (corrected by
 re-recording, under change control) or the live service has changed: both are findings. One
@@ -104,7 +112,8 @@ the server gets, its upstream base URLs and a fresh `NCI_SI_DATA_DIR`. The file 
 `NCI_SI_ACCEPTANCE_INDEX_CODES` names holds the index set, one code per line: every concept the
 fixture set records at an include that holds its summary. Every server then
 starts from a copy of that data directory. A test marked `prepared` needs it and is NOT RUN
-without the command; a command that fails, or whose requests find no fixture, ends the run.
+without the command; a command that fails, or whose requests find no fixture, fails every
+dependent test with its reason. Other tests continue, including on parallel workers.
 For this server it builds the interim NCIt index, in under a second and under a MB with the
 default hashing embedder:
 
@@ -119,7 +128,8 @@ fixture. Every setting the suite gives a server, and its format, is in the speci
 In fixture mode a test fails when one of its upstream requests found no fixture, and so does a
 server whose requests while it starts found none: the server may treat the refusal as an outage
 and still answer plausibly. A test that provokes such requests on purpose is marked
-`unmatched_upstream`.
+`unmatched_upstream`. Unmatched preparation and startup requests, including remote startup,
+remain `no_fixture` outcomes with the missing requests listed, not ordinary `failed` outcomes.
 
 ## Remote server
 
@@ -143,8 +153,10 @@ index of a remote server are specified once, in the specification's §5
 does not repeat them. What the operator needs at a glance: set the fixture server's base URLs and
 `NCI_SI_UPSTREAM_MODE` as the harness prints them, give the state hook for the tests that need a
 server of their own (without it they count as not run, so their tool is never PASS), and prepare the
-index and declare it with `NCI_SI_ACCEPTANCE_PREPARED=1`. The harness stops at once on an HTTP 401 or
-403 while it waits for the endpoint.
+index and declare it with `NCI_SI_ACCEPTANCE_PREPARED=1`. A failed initial probe or state change
+fails every dependent test; a failed scenario state change fails the test that needed it.
+The endpoint wait ends at once on an HTTP 401 or 403. Failures retain their diagnostic reason,
+with credentials withheld, rather than aborting the run or counting as `not_live`.
 
 ## The report
 
@@ -163,12 +175,29 @@ Combined with a live report, a tool that
 passes against fixtures but fails live is PASS (fixture only) only when every failing live test
 has a documented upstream limitation (`--limitations`, YAML of test id to requirement).
 
+Each fresh report records `run.exit_status`, `run.selected` (the selected test count, agreed
+by workers under xdist), `run.finished` (tests whose execution, including teardown, finished),
+and `run.worker_crashes`. The shared report loader requires status 0 or 1, no worker crashes,
+and equal selected, finished and recorded-outcome counts. Complete failing or skipped runs
+are valid evidence; an early stop or recovered worker crash is not. Rendering, ratchet check
+and update, live drift checking and the HTTP acceptance runner all use this guard. Reports
+without these fields must be rerun. `--check-complete fixture` (or `live`) validates without
+rendering; `--live live.json --drift` reports fixture passes that fail live and exits nonzero.
+Combined rendering and drift require both reports to select the same test IDs from the same
+suite; a complete subset cannot stand in for missing live evidence.
+
+The frozen Phase 5 snapshots are the archival exception: `scripts/upstream_requirements.py`
+checks their identical, nonempty 944-test sets and suite digest itself. Their historical JSON
+is not given invented completion fields. This exception lasts for those recorded snapshots;
+new snapshots must come from guarded runs and carry completion fields.
+
 ## CI: the ratchet on expected outcomes
 
 The `acceptance` job of `.github/workflows/ci.yml` runs the suite in fixture mode against the
 server built from the checkout (`pdm run acceptance -n 4 --report=fixture.json` with the prepare
 step above), beside the `test` and `selftest` jobs and depending on none of them. Pytest's exit
-status 0 and 1 are both a run; any other status, or a missing report, fails the job. The verdict
+status 0 and 1 are eligible, but the report must also prove completion; any other status or a
+missing or incomplete report fails the job. The verdict
 is the comparison with [`expected/fixture.json`](expected/fixture.json), which maps the id of
 every test to its outcome (`passed`, `failed`, `no_fixture`, `skipped`, `not_implemented`,
 `not_live`: the report's own vocabulary) and holds nothing else, so a reworded failure is not a

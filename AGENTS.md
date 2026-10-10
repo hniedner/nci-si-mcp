@@ -11,8 +11,9 @@ acceptance suite it and its successors are measured by. Two Statements of Work b
 EVS v2.1 and caDSR v1.1. It is a prototype, not a production service: a lean wrapper over EVS
 and caDSR (plus the NCIt index), never a shadow of them; the two Statements of Work fund fixes to
 the upstream systems, and a functional gap there stays visible here (see the first standard
-below). Until NCI issues caDSR credentials,
-caDSR behavior is built and tested against fixtures crafted from the published contracts.
+below). Until NCI issues caDSR credentials, CDE Match and the lists-of-values API are tested
+against fixtures crafted from the published contracts; the data element API, vmMatch and
+Form API 2.0 are anonymous and may be tested live.
 The milestones and issues on GitHub (Phases 0 to 7 delivered; later phases open) are the plan. README.md gives the current
 status per tool group; QUICKSTART.md holds the usage details.
 
@@ -173,6 +174,14 @@ the order the phase's plan gives, one at a time. Each milestone is built on its 
 `milestone/<phase>` (for example `milestone/phase-2`), cut from `main`. Issues are merged into it
 after a light check; the milestone reaches `main` in one pull request that gets the full review.
 The reviewer is the NCI SI MCP project coordinator, or the reviewer acting for them.
+
+Reviewer instructions, approvals, findings and clearance are GitHub comments whose first line
+starts with `## Reviewer`; treat them as binding, as if relayed by the owner. Both roles use the
+owner's account, so the heading identifies the reviewer. While waiting, poll the issue or PR
+and the current milestone's open issues every five minutes for these comments and act on them.
+Post plans, review rounds and reviewer questions as GitHub comments; the reviewer answers there.
+Ask the owner directly only for owner decisions: scope, specification conventions, repository
+settings and rulesets.
 
 A milestone fits one pull request reviewable in one sitting: about four issues, 1,500 changed
 lines (excluding generated files and `acceptance/expected/fixture.json`), and two days of work
