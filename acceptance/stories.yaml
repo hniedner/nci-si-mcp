@@ -259,7 +259,7 @@
   then: Paths retain source order, depth is capped and reported when it limits the answer, and all pages together preserve the source's ordered concepts without repeats.
   tests:
     tests/test_evs.py::test_a_depth_above_the_maximum_is_applied_as_the_maximum_and_reported: Excessive depth is capped; deeper nodes are absent and continuation beyond the cap is reported as depth truncation.
-    tests/test_evs.py::test_paths_to_root_are_the_platform_s_paths_in_its_order: Every supplied path to the root is returned in the source's code order.
+    tests/test_evs.py::test_paths_to_root_are_the_platform_s_paths_in_its_order: Paths preserve recorded source order in fixture mode; live paths start at the requested concept and agree with the returned nodes and release.
     tests/test_evs.py::test_limit_is_a_page_the_cursor_continues_to_the_end: Hierarchy continuation pages reconstruct the source listing without duplicate concepts.
 
 - id: value-set
@@ -294,7 +294,7 @@
   then: Source identities, content and ordering are preserved, and only mappings to the exact requested target are kept.
   tests:
     tests/test_evs.py::test_the_subsets_are_the_concept_s_subset_associations_in_order: Subsets are the concept's published subset associations in source order.
-    tests/test_evs.py::test_the_mappings_are_the_concept_s_maps_unchanged_in_order: Mappings are passed through unchanged in source order.
+    tests/test_evs.py::test_the_mappings_are_the_concept_s_maps_unchanged_in_order: Mappings preserve recorded source content and order in fixture mode; live mappings carry target identity, relation and matching release provenance.
     tests/test_evs.py::test_target_terminology_keeps_the_maps_with_that_target_and_no_other: Target-terminology filtering uses exact matching, including case.
 
 - id: retired-replacements
@@ -314,7 +314,7 @@
   when: I list relationships or use a catalogue missing a required exclusion code.
   then: All published relationships are listed, polarity follows codes rather than wording, and an incomplete exclusion catalogue causes an explicit error rather than a misleading graph.
   tests:
-    tests/test_evs.py::test_every_relationship_of_the_catalogue_is_listed_by_code_name_and_kind: Every role and association is listed with code, name and kind.
+    tests/test_evs.py::test_every_relationship_of_the_catalogue_is_listed_by_code_name_and_kind: The recorded catalogue matches exactly in fixture mode; live entries carry code, name, kind, polarity and matching release provenance.
     tests/test_evs.py::test_a_relationship_s_polarity_follows_its_code_not_its_name: Catalogue polarity remains correct when source relationship names change.
     tests/test_evs.py::test_a_catalogue_without_a_code_of_the_exclusion_set_fails_closed: Catalogue and neighbourhood calls reject a missing exclusion code and name what is absent.
 
@@ -326,7 +326,7 @@
   then: The record preserves its own fields, version and statuses; requested details are included; ambiguity identifies candidates; absence and an unsupported lookup route are distinguished.
   tests:
     tests/test_cadsr.py::test_a_data_element_is_its_own_fields_alone_with_its_version_and_statuses: The base record contains its own fields, selected version and source statuses without unrequested nested sections.
-    tests/test_cadsr.py::test_each_include_returns_its_section_as_the_platform_gives_it: Each optional section matches the source and does not add other sections.
+    tests/test_cadsr.py::test_each_include_returns_its_section_as_the_platform_gives_it: Each optional section matches recorded content in fixture mode, retains its live shape and registry provenance, and does not add other sections.
     tests/test_cadsr.py::test_a_question_text_one_data_element_has_finds_it: The fixture question Sex of a Person resolves to its unique full data element.
     tests/test_cadsr.py::test_a_question_text_several_have_is_an_invalid_request_naming_them: The fixture question Date of birth produces an ambiguity error naming candidate public identifiers.
     tests/test_cadsr.py::test_a_long_name_lookup_is_unavailable_never_empty: Unsupported lookup by long name reports capability unavailable.
@@ -407,7 +407,7 @@
   when: I find data elements for an NCIt concept, optionally expanding descendants and including permissible values.
   then: Uses come from the selected concept population, optional value uses are included when requested, provenance identifies both content states, and release mismatch or result caps are explicit.
   tests:
-    tests/test_cross_domain.py::test_the_data_elements_are_the_concept_s_and_with_expansion_its_descendants_too: Concept-only and descendant-expanded searches return the corresponding source data-element uses.
+    tests/test_cross_domain.py::test_the_data_elements_are_the_concept_s_and_with_expansion_its_descendants_too: Concept-only and descendant-expanded searches match recorded source uses in fixture mode; live uses carry identity and provenance matching the discovered NCIt release.
     tests/test_cross_domain.py::test_with_the_flag_the_permissible_values_that_stand_for_the_concept_come_too: Requested permissible-value uses represent the concept or selected descendants.
     tests/test_cross_domain.py::test_an_answer_of_the_shared_si_service_names_both_graphs_and_both_content_states: Answers preserve both graph identities and dates and distinguish NCIt release from registry state.
     tests/test_cross_domain.py::test_a_release_other_than_the_ncit_graph_s_fails_closed: A requested release different from the NCIt graph is rejected.

@@ -11,8 +11,9 @@ acceptance suite it and its successors are measured by. Two Statements of Work b
 EVS v2.1 and caDSR v1.1. It is a prototype, not a production service: a lean wrapper over EVS
 and caDSR (plus the NCIt index), never a shadow of them; the two Statements of Work fund fixes to
 the upstream systems, and a functional gap there stays visible here (see the first standard
-below). Until NCI issues caDSR credentials,
-caDSR behavior is built and tested against fixtures crafted from the published contracts.
+below). Until NCI issues caDSR credentials, CDE Match and the lists-of-values API are tested
+against fixtures crafted from the published contracts; the data element API, vmMatch and
+Form API 2.0 are anonymous and may be tested live.
 The milestones and issues on GitHub (Phases 0 to 7 delivered; later phases open) are the plan. README.md gives the current
 status per tool group; QUICKSTART.md holds the usage details.
 

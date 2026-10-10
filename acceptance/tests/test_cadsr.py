@@ -1,8 +1,8 @@
 """The caDSR tools' own requirements (spec/requirements.yaml), and the cross-cutting ones only a
 caDSR answer shows, each test against its tool.
 
-What a test expects it reads from the recordings (the `recorded` fixture). A fact it cannot
-read there is named beside it, with the fixture file that holds it.
+Fixture expectations come from recordings. Anonymous live content checks assert identity,
+version, status and include contracts without assuming recorded values.
 """
 
 import json
@@ -15,6 +15,8 @@ from nci_si_acceptance.results import (
     EXPORT_LISTING,
     error_code,
     export_date,
+    is_name,
+    release_of,
     requests_naming,
 )
 from nci_si_acceptance.spec import RECORDS, TOOLS
@@ -131,15 +133,20 @@ def test_without_a_registry_release_the_export_date_stands_for_it(tools, upstrea
 @pytest.mark.live_capable
 @pytest.mark.parametrize("version", [None, "1"], ids=["latest", "version-1"])
 def test_a_data_element_is_its_own_fields_alone_with_its_version_and_statuses(
-    tools, recorded, version
+    tools, target, recorded, version
 ):
-    element = _element(recorded, VERSION_1 if version else ELEMENT)
     pinned = {"version": version} if version else {}
 
     content = _ok(tools.call("get_data_element", {"publicId": DATA_ELEMENT, **pinned}))
 
     assert set(content) - set(OWN) == set()
-    assert _own(content) == _own(element)
+    if target.mode == "fixture":
+        assert _own(content) == _own(_element(recorded, VERSION_1 if version else ELEMENT))
+    else:
+        assert content.get("publicId") == DATA_ELEMENT
+        assert all(is_name(content.get(key)) for key in OWN if key != "provenance")
+        assert version is None or content["version"] == version
+        assert release_of(content) == ("cadsr", None)
 
 
 def _own(element):
@@ -224,13 +231,22 @@ def _returned(content, include):
 @pytest.mark.requirement("get_data_element-1")
 @pytest.mark.live_capable
 @pytest.mark.parametrize("include", SECTIONS)
-def test_each_include_returns_its_section_as_the_platform_gives_it(tools, recorded, include):
-    expected = _section(_element(recorded), include)
-    assert expected
-
+def test_each_include_returns_its_section_as_the_platform_gives_it(
+    tools, target, recorded, include
+):
+    # All sections come from the anonymous DataElement response, not CDE Match or NCILovAPI.
     content = _ok(tools.call("get_data_element", {"publicId": DATA_ELEMENT, "include": [include]}))
 
-    assert _returned(content, include) == expected
+    if target.mode == "fixture":
+        expected = _section(_element(recorded), include)
+        assert expected
+        assert _returned(content, include) == expected
+    else:
+        assert include in content
+        section = content[include]
+        assert isinstance(section, dict if include == "valueDomain" else list)
+        assert content.get("publicId") == DATA_ELEMENT
+        assert release_of(content) == ("cadsr", None)
     assert [name for name in SECTIONS if name != include and name in content] == []
     # A permissible value and a scheme are items of their own, each with its provenance.
     nested = content[include] if include in ("permissibleValues", "classificationSchemes") else []
