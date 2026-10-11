@@ -102,6 +102,12 @@ checks; [the suite README](acceptance/README.md#writing-a-test) maintains the ex
 Validation refusals are not evidence of working upstream retrieval; credentials alone do not
 enable the fixture-only cases. This remains limited live coverage, not full content conformance.
 
+On pull requests, `scripts/ci_images.py` skips an image job only when every changed path
+is a known noninput for that image. Unknown paths, an empty or unavailable diff, and all
+pushes to `main` select both image jobs. The event's full base/head change set includes
+deleted paths and both sides of renames; test-only changes can avoid image builds, while
+public documentation remains a companion-image input. Other CI gates are unchanged.
+
 ## Coverage badges
 
 CI exports separate JSON coverage reports for the server and the complete, combined harness

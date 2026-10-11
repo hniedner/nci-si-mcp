@@ -16,8 +16,30 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  changes:
+    name: image selection
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      image: ${{ steps.select.outputs.image }}
+      companions: ${{ steps.select.outputs.companions }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Select images from the event change set
+        id: select
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python3 scripts/ci_images.py "$EVENT_NAME" "$BASE_SHA" "$HEAD_SHA" >> "$GITHUB_OUTPUT"
+
   companions:
     name: companion containers (amd64)
+    needs: [changes]
+    if: github.event_name != 'pull_request' || needs.changes.outputs.companions == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -89,6 +111,8 @@ jobs:
 
   image:
     name: container (amd64)
+    needs: [changes]
+    if: github.event_name != 'pull_request' || needs.changes.outputs.image == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -298,7 +322,7 @@ jobs:
 
   coverage-badges:
     name: publish coverage badges
-    needs: [quality, test, coverage, acceptance, acceptance-http, image, documentation, companions]
+    needs: [changes, quality, test, coverage, acceptance, acceptance-http, image, documentation, companions]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
