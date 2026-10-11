@@ -14,6 +14,15 @@ SELECTOR = Path(__file__).resolve().parents[1] / "scripts/ci_images.py"
 
 
 class ImageWorkflowTest(unittest.TestCase):
+    def test_selector_installs_its_python_runtime_before_executing(self):
+        jobs = yaml.safe_load(Path(".github/workflows/ci.yml").read_text())["jobs"]
+        steps = jobs["changes"]["steps"]
+        setup = [step for step in steps if "setup-python@" in step.get("uses", "")]
+        self.assertEqual(len(setup), 1, "The selector requires Python 3.14, not runner Python")
+        self.assertEqual(setup[0]["with"]["python-version"], "3.14")
+        command = next(step for step in steps if "scripts/ci_images.py" in step.get("run", ""))
+        self.assertLess(steps.index(setup[0]), steps.index(command))
+
     def test_same_named_image_jobs_use_event_sha_selection_and_main_always_runs(self):
         jobs = yaml.safe_load(Path(".github/workflows/ci.yml").read_text())["jobs"]
         self.assertIn("changes", jobs, "PR images need fail-safe change selection")
