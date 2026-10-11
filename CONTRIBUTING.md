@@ -111,7 +111,9 @@ public documentation remains a companion-image input. Other CI gates are unchang
 ## Coverage badges
 
 CI exports separate JSON coverage reports for the server and the complete, combined harness
-self-tests. After every CI gate passes on a push to `main`, the badge job writes measured
+self-tests. A read-only job renders the three badge JSON files; a separate writer downloads
+that run's data without checking out or executing repository code. After every CI gate
+passes on a push to `main`, the writer publishes measured
 line-plus-branch percentages and their source counts, commit and run URL to the dedicated
 `coverage-badges` branch. It never commits to `main`, publishes from a PR, or replaces data
 from a newer main commit with an older run. Failed runs leave the previous measurements
