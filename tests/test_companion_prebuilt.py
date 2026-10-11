@@ -11,7 +11,7 @@ from unittest.mock import patch
 from scripts import companion_context
 from scripts.operator_source import head_commit
 
-from test_companion_context import CompanionContextTest
+import test_companion_context
 
 
 class PrebuiltSiteTest(unittest.TestCase):
@@ -39,7 +39,9 @@ class PrebuiltSiteTest(unittest.TestCase):
         with (
             patch("sys.argv", arguments),
             patch.object(companion_context, "clean_commit", return_value=self.commit),
-            patch.object(companion_context, "_wheels", CompanionContextTest.wheels),
+            patch.object(
+                companion_context, "_wheels", test_companion_context.CompanionContextTest.wheels
+            ),
             redirect_stderr(diagnostics),
         ):
             try:
