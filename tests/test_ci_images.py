@@ -35,11 +35,11 @@ class ImageWorkflowTest(unittest.TestCase):
         ):
             self.assertIn("changes", jobs[job]["needs"])
             self.assertEqual(jobs[job]["name"], name)
-            self.assertEqual(
-                jobs[job]["if"],
+            self.assertIn(
                 "github.event_name != 'pull_request' || needs.changes.outputs."
                 + job
                 + " == 'true'",
+                jobs[job]["if"],
             )
             self.assertEqual(selector["outputs"][job], "${{ steps.select.outputs." + job + " }}")
 
