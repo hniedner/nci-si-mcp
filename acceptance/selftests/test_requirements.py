@@ -229,6 +229,11 @@ def test_a_tool_row_states_its_identifier_forms_and_free_text():
     assert "Free text: `entities[].name`, `entities[].userTip`" in rendered
 
 
+def test_tool_display_titles_are_rendered_beside_their_programmatic_names():
+    rendered = render({})
+    assert "| Current terminology release<br>`resolve_release` |" in rendered
+
+
 def test_the_resources_and_prompts_are_rendered_with_their_templates_and_the_decision():
     rendered = render({})
 
