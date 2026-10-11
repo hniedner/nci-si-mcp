@@ -150,7 +150,10 @@ def _tool_row(name: str, tool: dict[str, Any]) -> str:
     items = (
         f" Items: {', '.join(f'`{path}`' for path in tool['items'])}." if "items" in tool else ""
     )
-    return f"| `{name}` | `{signature}` | {cell(tool['summary'])}{values}{_limits(tool)}{items} |"
+    return (
+        f"| {cell(tool['title'])}<br>`{name}` | `{signature}` | "
+        f"{cell(tool['summary'])}{values}{_limits(tool)}{items} |"
+    )
 
 
 def _tools() -> list[str]:

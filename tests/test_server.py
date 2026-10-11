@@ -242,6 +242,16 @@ class ServerTest(ServerFixture):
         for term in ("depth", "exact=false", "budgetPerKind"):
             self.assertIn(term, tools["get_concept_neighborhood"].description)
 
+    def test_tool_titles_follow_the_specification_in_each_profile(self, _):
+        for profile in ("evs", "cadsr", "unified"):
+            self.settings = replace(self.settings, profile=profile)
+            tools = self.session(lambda client: client.list_tools()).tools
+            for tool in tools:
+                with self.subTest(profile=profile, tool=tool.name):
+                    self.assertIsInstance(tool.title, str)
+                    self.assertTrue(tool.title.strip())
+                    self.assertEqual(tool.title, TOOLS[tool.name]["title"])
+
     def test_schemas_carry_no_generated_titles_and_output_schemas_name_their_root(self, _):
         tools = {tool.name: tool for tool in self.session(lambda client: client.list_tools()).tools}
 

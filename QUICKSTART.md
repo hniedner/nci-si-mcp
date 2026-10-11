@@ -469,6 +469,9 @@ unknown, its record gives `omitted: 0` and `exact: false`.
 
 ## MCP Tools
 
+Clients may display a tool's human-readable title in pickers and approval prompts; calls still
+use its programmatic name. These display labels are separate from schema titles.
+
 Every parameter of every tool is described in the served input schema, with an example, its default
 and its maximum where it has them, its stated form (`pattern`) and its list limits
 (`minItems`, `maxItems`); the schema closes the argument set, and that of each nested record (`additionalProperties: false`),

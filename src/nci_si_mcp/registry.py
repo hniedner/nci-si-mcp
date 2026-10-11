@@ -68,6 +68,7 @@ class ToolSpec:
     # None means the handler supplies the whole policy, without a registry default.
     resolution: bool | None = None
     name: str | None = None
+    title: str | None = None
     command: str | None = None
     uri: str | None = None
     audit: dict[str, AuditClass] = field(default_factory=dict)
@@ -125,6 +126,7 @@ SPECS = (
         "workflow",
         GroundedValue | ErrorResult,
         name="ground_value",
+        title="Cross-registry value grounding",
         command="ground-value",
         audit={
             "conceptCode": "plain",
@@ -139,6 +141,7 @@ SPECS = (
         "workflow",
         Cohort | ErrorResult,
         name="expand_cohort",
+        title="Cohort concept expansion",
         command="expand-cohort",
         audit={
             "conceptCode": "plain",
@@ -153,6 +156,7 @@ SPECS = (
         "workflow",
         HarmonizedDictionary | ErrorResult,
         name="harmonize_data_dictionary",
+        title="Data dictionary harmonization",
         command="harmonize-data-dictionary",
         audit={"registryRelease": "plain", "columns": "hash", "filters": "hash"},
     ),
@@ -161,6 +165,7 @@ SPECS = (
         "cross-domain",
         StoredValuesResult | ErrorResult,
         name="resolve_stored_value",
+        title="Stored values in a commons",
         command="resolve-stored-value",
         audit={
             "conceptCode": "plain",
@@ -174,6 +179,7 @@ SPECS = (
         "cross-domain",
         ReleaseAlignment | ErrorResult,
         name="get_release_alignment",
+        title="Terminology and registry alignment",
         command="get-release-alignment",
         audit={"maxIntervalDays": "plain"},
     ),
@@ -182,6 +188,7 @@ SPECS = (
         "cross-domain",
         DataElementUses | ErrorResult,
         name="find_data_elements_for_concept",
+        title="Data elements for a concept",
         command="find-data-elements-for-concept",
         audit={
             "conceptCode": "plain",
@@ -198,6 +205,7 @@ SPECS = (
         "cross-domain",
         PermissibleValueConcept | ErrorResult,
         name="get_concept_for_permissible_value",
+        title="Concept for a permissible value",
         command="get-concept-for-permissible-value",
         audit={
             "permissibleValueId": "plain",
@@ -212,6 +220,7 @@ SPECS = (
         Form | ErrorResult,
         False,
         name="get_form",
+        title="Form details",
         command="get-form",
         audit={
             "publicId": "plain",
@@ -227,6 +236,7 @@ SPECS = (
         PermissibleValue | ErrorResult,
         False,
         name="get_permissible_value",
+        title="Permissible value details",
         command="get-permissible-value",
         audit={"permissibleValueId": "plain", "registryRelease": "plain"},
     ),
@@ -236,6 +246,7 @@ SPECS = (
         CodeMapsResult | ErrorResult,
         False,
         name="get_code_map",
+        title="Commons value bindings",
         command="get-code-map",
         audit={
             "sourceSystem": "plain",
@@ -259,6 +270,7 @@ SPECS = (
         DataElementMatches | ErrorResult,
         False,
         name="match_data_elements",
+        title="Data element candidates",
         command="match-data-elements",
         audit={
             "entities": "hash",
@@ -275,6 +287,7 @@ SPECS = (
         ValueMeaningMatches | ErrorResult,
         False,
         name="match_value_meanings",
+        title="Value meaning candidates",
         command="match-value-meanings",
         audit={
             "values": "hash",
@@ -289,6 +302,7 @@ SPECS = (
         DataElement | ErrorResult,
         False,
         name="get_data_element",
+        title="Data element details",
         command="get-data-element",
         audit={
             "publicId": "plain",
@@ -305,6 +319,7 @@ SPECS = (
         DataElementSearch | ErrorResult,
         False,
         name="search_data_elements",
+        title="Data element search",
         command="search-data-elements",
         audit={
             "query": "hash",
@@ -321,6 +336,7 @@ SPECS = (
         ContextsResult | ErrorResult,
         False,
         name="list_contexts",
+        title="Registry contexts",
         command="list-contexts",
         audit={"limit": "plain", "cursor": "hash", "registryRelease": "plain"},
     ),
@@ -330,6 +346,7 @@ SPECS = (
         ClassificationSchemesResult | ErrorResult,
         False,
         name="list_classification_schemes",
+        title="Classification schemes",
         command="list-classification-schemes",
         audit={"context": "hash", "limit": "plain", "cursor": "hash", "registryRelease": "plain"},
     ),
@@ -339,6 +356,7 @@ SPECS = (
         RegistryReleaseResult | ErrorResult,
         True,
         name="resolve_registry_release",
+        title="Registry content state",
         command="resolve-registry-release",
     ),
     ToolSpec(
@@ -370,6 +388,7 @@ SPECS = (
         ValueSetExpansion | ErrorResult,
         False,
         name="expand_value_set",
+        title="Subset members",
         audit={
             "terminology": "plain",
             "release": "plain",
@@ -386,6 +405,7 @@ SPECS = (
         SubsetsResult | ErrorResult,
         False,
         name="get_concept_subsets",
+        title="Concept subset membership",
         audit={"terminology": "plain", "release": "plain", "code": "plain"},
     ),
     ToolSpec(
@@ -394,6 +414,7 @@ SPECS = (
         MappingsResult | ErrorResult,
         False,
         name="get_concept_mappings",
+        title="Cross-terminology mappings",
         audit={
             "terminology": "plain",
             "release": "plain",
@@ -407,6 +428,7 @@ SPECS = (
         RetiredCode | ErrorResult,
         False,
         name="resolve_retired_code",
+        title="Retired concept replacements",
         audit={"terminology": "plain", "release": "plain", "code": "plain"},
     ),
     ToolSpec(
@@ -415,6 +437,7 @@ SPECS = (
         RelationshipsResult | ErrorResult,
         False,
         name="list_relationships",
+        title="Relationship types",
         audit={"terminology": "plain", "release": "plain"},
     ),
     ToolSpec(
@@ -423,6 +446,7 @@ SPECS = (
         ConceptBatch | ErrorResult,
         False,
         name="get_concepts",
+        title="Concept details in bulk",
         audit={"terminology": "plain", "release": "plain", "codes": "plain", "include": "plain"},
     ),
     ToolSpec(
@@ -431,6 +455,7 @@ SPECS = (
         Concept | ErrorResult,
         False,
         name="get_concept",
+        title="Concept details",
         audit={"terminology": "plain", "release": "plain", "code": "plain", "include": "plain"},
     ),
     ToolSpec(
@@ -439,6 +464,7 @@ SPECS = (
         ConceptSearch | ErrorResult,
         False,
         name="search_concepts",
+        title="Terminology search",
         audit={
             "terminology": "plain",
             "release": "plain",
@@ -455,6 +481,7 @@ SPECS = (
         Hierarchy | ErrorResult,
         False,
         name="get_concept_hierarchy",
+        title="Concept hierarchy",
         audit={
             "terminology": "plain",
             "release": "plain",
@@ -471,6 +498,7 @@ SPECS = (
         Neighborhood | ErrorResult,
         False,
         name="get_concept_neighborhood",
+        title="Concept relationships",
         audit={
             "terminology": "plain",
             "release": "plain",
@@ -489,6 +517,7 @@ SPECS = (
         ResolvedReleaseResult | ErrorResult,
         True,
         name="resolve_release",
+        title="Current terminology release",
         command="resolve-release",
         audit={"terminology": "plain", "channel": "plain"},
     ),
@@ -498,6 +527,7 @@ SPECS = (
         TerminologiesResult | ErrorResult,
         True,
         name="list_terminologies",
+        title="Available terminologies",
         command="list-terminologies",
     ),
     ToolSpec(

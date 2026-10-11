@@ -170,6 +170,7 @@ def create_mcp(
             mcp.add_tool(
                 fn,
                 name=spec.name,
+                title=spec.title,
                 annotations=ToolAnnotations.model_validate(spec.annotations),
                 meta={"group": spec.group},
                 structured_output=True,
