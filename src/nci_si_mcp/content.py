@@ -522,8 +522,9 @@ def search_concepts(
     capability_unavailable when the local index or NumPy is missing; release_mismatch when the
     index holds another release; invalid_request for an indexed mode on another terminology;
     cursor_expired when the index or an explicit release changed since the cursor;
-    release_not_available when the session's pinned release is withdrawn (start a new session or
-    name a release).
+    release_not_available when a stateful handshake HTTP session's or stdio connection's pinned
+    release is withdrawn (start a new session or name a release). Sessionless 2026-07-28 HTTP
+    resolves omitted releases per call.
     """
     limit = bounded(limit, MAX_INDEX_SEARCH_LIMIT, "limit")
     _search_options(query, mode, retired)
@@ -734,8 +735,9 @@ def get_concept_hierarchy(
 
     bound_exceeded when paging cannot reach the page within the request limit: narrow the
     concept or depth. cursor_expired when an explicit release was withdrawn;
-    release_not_available when the session's pinned release was (start a new session or name a
-    release); not_found for an unknown code.
+    release_not_available when a stateful handshake HTTP session's or stdio connection's pinned
+    release was (start a new session or name a release); not_found for an unknown code.
+    Sessionless 2026-07-28 HTTP resolves omitted releases per call.
     """
     code = _code(code, terminology)
     validate_choice(direction, get_args(HierarchyDirection), "direction")

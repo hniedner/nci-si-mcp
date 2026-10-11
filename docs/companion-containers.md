@@ -53,6 +53,10 @@ there. Proposals remain advisory; the admin container cannot apply them or resta
 ## Serving MCP alongside the companions
 
 Build the existing `nci-si-mcp:verified` image using the [container runbook](container.md).
+The MCP compose service explicitly selects `NCI_SI_HTTP_AUTH_MODE=trusted-local` and publishes
+only on `127.0.0.1:8000`; the image itself defaults to required authentication. Its `/ready`
+healthcheck verifies the local index/model, not upstream availability, with a 180-second startup
+grace. Do not expose this opt-out beyond the trusted local deployment.
 Set `NCI_SI_LOCAL_INDEX` and `NCI_SI_LOCAL_MODEL` to absolute directories containing a compatible
 completed index and offline model, readable by UID 65532, then:
 

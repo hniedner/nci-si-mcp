@@ -70,7 +70,10 @@ Release = Annotated[
     Described(
         "Release of the terminology to read, for example 26.06e. "
         "For NCIt, leave it unset to use the current release of the configured "
-        "channel, kept for the MCP session. Other terminologies need it.",
+        "channel, kept for stateful handshake HTTP sessions and stdio connections. "
+        "Sessionless 2026-07-28 HTTP resolves per call, even in stateful mode; "
+        "pass the release from the first result's provenance to keep it stable. "
+        "Other terminologies need it.",
         pattern=RELEASE_FORM,
     ),
 ]
@@ -78,7 +81,10 @@ NcitRelease = Annotated[
     str | None,
     Described(
         "NCIt release to use, for example 26.06e. Leave it unset to use the current release "
-        "of the configured channel, kept for the MCP session.",
+        "of the configured channel, kept for stateful handshake HTTP sessions "
+        "and stdio connections. "
+        "Sessionless 2026-07-28 HTTP resolves per call, even in stateful mode; "
+        "pass the release from the first result's provenance to keep it stable.",
         pattern=RELEASE_FORM,
     ),
 ]

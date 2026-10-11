@@ -382,8 +382,9 @@ def expand_cohort(
     the cohort, not those of descendants.
 
     not_found for an unknown code; bound_exceeded when the request limit is spent before a
-    result exists; release_not_available when the session's pinned release is withdrawn;
-    upstream_unavailable otherwise.
+    result exists; release_not_available when a stateful handshake HTTP session's or stdio
+    connection's pinned release is withdrawn; upstream_unavailable otherwise.
+    Sessionless 2026-07-28 HTTP resolves omitted releases per call.
     """
     validate_identifier(conceptCode, NCIT_CODE_FORM, "conceptCode")
     require_operation("expand_cohort", {})

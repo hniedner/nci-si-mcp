@@ -2,8 +2,9 @@
 
 A `ReleaseContext` names the EVS release every request of one call is pinned to. It is resolved
 explicitly by `resolve_evs_release` for discovery. Content calls use the supplied release or
-the shared selection scope's implicit NCIt pin. Discovery operations remain fresh; only an
-MCP session's implicit content pin survives calls (X-22).
+the shared selection scope's implicit NCIt pin. Discovery operations remain fresh.
+Stateful handshake HTTP sessions and stdio connections retain an implicit content pin (X-22);
+sessionless HTTP resolves per call, regardless of the configured session mode.
 `registry_state` is the caDSR counterpart: caDSR publishes no registry release, so the state
 is the export's date and never an invented identifier (A3.8).
 """

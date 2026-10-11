@@ -15,6 +15,7 @@ from nci_si_mcp.evs import EVSClient, EVSReleaseNotFoundError
 from nci_si_mcp.registry import invoke
 from nci_si_mcp.release_selection import SessionRelease, session_scope
 from nci_si_mcp.server import create_mcp
+from nci_si_mcp.transport import create_http_app
 from test_evs_client import FakeResponse
 from test_server import ServerFixture
 
@@ -295,6 +296,45 @@ class ReleaseSelectionTest(ServerFixture):
     def test_real_stateful_http_reuses_the_validated_session(self):
         self.assertEqual(asyncio.run(self.http_sequence(False)), ["26.06e", "26.07d", "26.06e"])
 
+    def test_modern_http_on_a_stateful_app_resolves_each_call_and_accepts_explicit_release(self):
+        published = {
+            "26.06e": concept("C3262", version="26.06e", active=True),
+            "26.07d": concept("C3262", version="26.07d", active=True),
+        }
+
+        def upstream(_code, release, include=()):
+            return deepcopy(published[release.version])
+
+        async def scenario():
+            app = create_http_app(
+                replace(self.settings, http_sessions="stateful"), context=self.context
+            )
+            async with (
+                app.router.lifespan_context(app),
+                httpx2.AsyncClient(
+                    transport=httpx2.ASGITransport(app), base_url="http://127.0.0.1:8000"
+                ) as client,
+            ):
+                first = await modern_concept(client)
+                self.assertNotIn("error", first.json()["result"]["structuredContent"])
+                self.move()
+                second = await modern_concept(client)
+                explicit = await modern_concept(
+                    client, version(first.json()["result"]["structuredContent"])
+                )
+                last = await modern_concept(client)
+                return first, second, explicit, last
+
+        with patch.object(self.evs, "get_concept", side_effect=upstream):
+            replies = asyncio.run(scenario())
+        contents = [reply.json()["result"]["structuredContent"] for reply in replies]
+        self.assertEqual(
+            [version(content) for content in contents],
+            ["26.06e", "26.07d", "26.06e", "26.07d"],
+        )
+        for reply in replies:
+            self.assertNotIn("mcp-session-id", reply.headers)
+
     async def http_sequence(self, stateless):
         app = create_mcp(context=self.context).streamable_http_app(
             stateless_http=stateless,
@@ -368,3 +408,31 @@ async def http_concept(client, headers):
     )
     response.raise_for_status()
     return response.json()["result"]["structuredContent"]
+
+
+async def modern_concept(client, release=None):
+    response = await client.post(
+        "/mcp",
+        headers={
+            "Accept": "application/json, text/event-stream",
+            "MCP-Protocol-Version": "2026-07-28",
+            "Mcp-Method": "tools/call",
+            "Mcp-Name": "get_concept",
+        },
+        json={
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/call",
+            "params": {
+                "name": "get_concept",
+                "arguments": {"terminology": "ncit", "code": "C3262", "release": release},
+                "_meta": {
+                    "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+                    "io.modelcontextprotocol/clientInfo": {"name": "release-test", "version": "1"},
+                    "io.modelcontextprotocol/clientCapabilities": {},
+                },
+            },
+        },
+    )
+    response.raise_for_status()
+    return response

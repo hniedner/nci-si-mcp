@@ -151,6 +151,8 @@ def _serving_probe(network: str, name: str) -> tuple[str, int]:
         "NCI_SI_TRANSPORT=streamable-http",
         "-e",
         "NCI_SI_HTTP_HOST=0.0.0.0",
+        "-e",
+        "NCI_SI_HTTP_AUTH_MODE=trusted-local",
         "nci-si-admin:local",
         "-m",
         "nci_si_mcp.cli",

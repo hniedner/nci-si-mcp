@@ -33,6 +33,8 @@ admission. All governed HTTP responses are `Cache-Control: no-store`. Forwarded 
 grant no authority; Uvicorn proxy-header interpretation stays off. Set the actual external
 Host/Origin allowlists. An approved TLS/network proxy must pass bearer authentication through;
 this implementation does not accept proxy assertions of user identity.
+Deployment also needs [gateway limits and timeouts, and network egress controls](container.md#gateway-controls-and-outbound-access);
+authentication alone does not provide these controls.
 
 ```mermaid
 sequenceDiagram

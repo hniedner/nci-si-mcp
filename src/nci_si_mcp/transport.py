@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 from typing import TYPE_CHECKING, Any
+from urllib.request import parse_http_list
 
 from .audit import emit
 from .config import Settings
@@ -25,11 +26,18 @@ logger = logging.getLogger(__name__)
 class HTTPBoundary:
     """Protect all HTTP routes and record only the status of authentication refusals."""
 
-    def __init__(self, app: ASGIApp, security: Any, protected: bool = False) -> None:
+    def __init__(
+        self,
+        app: ASGIApp,
+        security: Any,
+        protected: bool = False,
+        required_scopes: tuple[str, ...] = (),
+    ) -> None:
         from mcp.server.transport_security import TransportSecurityMiddleware
 
         self.app = app
         self.protected = protected
+        self.required_scopes = required_scopes
         self.security = TransportSecurityMiddleware(security)
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
@@ -40,12 +48,22 @@ class HTTPBoundary:
             return
 
         async def report(message: Message) -> None:
-            if message["type"] == "http.response.start" and self.protected:
+            if message["type"] != "http.response.start":
+                await send(message)
+                return
+            if self.protected:
                 headers = [
                     (k, v) for k, v in message.get("headers", []) if k.lower() != b"cache-control"
                 ]
                 message = {**message, "headers": [*headers, (b"cache-control", b"no-store")]}
-            if message["type"] == "http.response.start" and _auth_refusal(message):
+            if _auth_refusal(message):
+                message = {
+                    **message,
+                    "headers": [
+                        _scope_challenge(header, self.required_scopes)
+                        for header in message["headers"]
+                    ],
+                }
                 emit(logger, logging.WARNING, "http_auth_rejected", status=message["status"])
             await send(message)
 
@@ -59,6 +77,21 @@ def _auth_refusal(message: Message) -> bool:
     return message["status"] in (401, 403) and any(
         key.lower() == b"www-authenticate" for key, _ in message.get("headers", [])
     )
+
+
+def _scope_challenge(header: tuple[bytes, bytes], scopes: tuple[str, ...]) -> tuple[bytes, bytes]:
+    key, value = header
+    scheme, _, parameters = value.partition(b" ")
+    if key.lower() != b"www-authenticate" or scheme.lower() != b"bearer" or not scopes:
+        return header
+    # Parse only to detect an existing parameter; preserve all original challenge bytes.
+    names = [
+        part.partition("=")[0].strip().lower()
+        for part in parse_http_list(parameters.decode("latin1"))
+    ]
+    if "scope" in names:
+        return header
+    return key, value + b', scope="' + " ".join(scopes).encode("ascii") + b'"'
 
 
 def _readiness_error(context: Context, require_index: bool) -> str | None:
@@ -138,6 +171,7 @@ def create_http_app(
         HTTPBoundary,
         security=security,
         protected=auth is not None or authority_resolver is not None,
+        required_scopes=tuple(auth.required_scopes or ()) if auth else (),
     )
     return app
 

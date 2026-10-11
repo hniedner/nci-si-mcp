@@ -223,7 +223,17 @@ class ServerTest(ServerFixture):
         info, instructions = self.session(server_info)
 
         self.assertEqual((info.name, info.version), ("nci-si-mcp", metadata.version("nci-si-mcp")))
+        self.assertRegex(instructions, r"2026-07-28 HTTP.*per call")
+        self.assertRegex(instructions, r"pin.*handshake.*stdio")
+        self.assertRegex(instructions, r"pass.*release.*first result's provenance.*stable")
         self.assertEqual(instructions, INSTRUCTIONS)
+
+    def test_release_parameter_descriptions_explain_sessionless_resolution(self, _):
+        tools = {tool.name: tool for tool in self.session(lambda client: client.list_tools()).tools}
+        for name in ("get_concept", "expand_cohort"):
+            with self.subTest(tool=name):
+                description = tools[name].input_schema["properties"]["release"]["description"]
+                self.assertRegex(description, r"Sessionless.*HTTP.*per call")
 
     def test_tools_are_registered_with_descriptions_and_closed_value_sets(self, _):
         tools = {tool.name: tool for tool in self.session(lambda client: client.list_tools()).tools}
@@ -239,6 +249,16 @@ class ServerTest(ServerFixture):
             self.assertIn(term, tools["get_concept"].description)
         for term in ("depth", "exact=false", "budgetPerKind"):
             self.assertIn(term, tools["get_concept_neighborhood"].description)
+
+    def test_tool_titles_follow_the_specification_in_each_profile(self, _):
+        for profile in ("evs", "cadsr", "unified"):
+            self.settings = replace(self.settings, profile=profile)
+            tools = self.session(lambda client: client.list_tools()).tools
+            for tool in tools:
+                with self.subTest(profile=profile, tool=tool.name):
+                    self.assertIsInstance(tool.title, str)
+                    self.assertTrue(tool.title.strip())
+                    self.assertEqual(tool.title, TOOLS[tool.name]["title"])
 
     def test_schemas_carry_no_generated_titles_and_output_schemas_name_their_root(self, _):
         tools = {tool.name: tool for tool in self.session(lambda client: client.list_tools()).tools}

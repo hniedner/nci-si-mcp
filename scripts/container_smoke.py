@@ -22,6 +22,7 @@ from nci_si_mcp.registry import SPECS
 ROOT = Path(__file__).resolve().parents[1]
 DOCKER = shutil.which("docker") or "docker"
 MCP_TOOLS = {spec.name for spec in SPECS if spec.name}
+STARTUP_SECONDS = 180
 
 
 def docker(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
@@ -48,6 +49,8 @@ def mounted(image: str, assets: Path, *args: str) -> list[str]:
         "NCI_SI_DATA_DIR=/assets/data",
         "-e",
         "NCI_SI_EMBEDDING_MODEL=/assets/model",
+        "-e",
+        "NCI_SI_HTTP_AUTH_MODE=trusted-local",
         *args,
         image,
     ]
@@ -90,8 +93,33 @@ def request(port: int, path: str) -> dict:
         return json.load(response)
 
 
+def default_auth_refusal(image: str, assets: Path) -> None:
+    name = "nci-si-auth-" + uuid.uuid4().hex
+    command = mounted(image, assets, "--name", name, "--network", "none")
+    explicit = command.index("NCI_SI_HTTP_AUTH_MODE=trusted-local")
+    del command[explicit - 1 : explicit + 1]  # Exercise the image default, not the smoke opt-out.
+    try:
+        result = docker(*command, check=False)
+        if result.returncode == 0 or "Required HTTP authentication needs" not in result.stderr:
+            raise RuntimeError("Image did not refuse startup without its auth integration")
+    finally:
+        docker("rm", "-f", name, check=False)
+
+
+def wait_healthy(name: str) -> None:
+    deadline = time.monotonic() + STARTUP_SECONDS
+    while time.monotonic() < deadline:
+        status = docker("inspect", "--format", "{{.State.Health.Status}}", name).stdout.strip()
+        if status == "healthy":
+            return
+        if status != "starting":
+            raise RuntimeError(f"Docker health is {status}, not healthy")
+        time.sleep(1)
+    raise RuntimeError(f"Docker health did not become healthy within {STARTUP_SECONDS} seconds")
+
+
 def wait_ready(port: int) -> None:
-    until = time.monotonic() + 180
+    until = time.monotonic() + STARTUP_SECONDS
     while time.monotonic() < until:
         try:
             if request(port, "/ready") == {"status": "ready"}:
@@ -99,7 +127,7 @@ def wait_ready(port: int) -> None:
         except urllib.error.URLError, TimeoutError, ConnectionError:
             pass  # A bounded startup poll; failure is reported below, never treated as ready.
         time.sleep(1)
-    raise RuntimeError("Container never became ready within 180 seconds")
+    raise RuntimeError(f"Container never became ready within {STARTUP_SECONDS} seconds")
 
 
 async def surface(port: int, assets: Path) -> None:
@@ -139,6 +167,7 @@ def serve(image: str, assets: Path) -> None:
         if request(port, "/health") != {"status": "ok"}:
             raise RuntimeError("Health endpoint failed")
         asyncio.run(surface(port, assets))
+        wait_healthy(name)
         docker("stop", "--time", "20", name)
         if docker("inspect", "--format", "{{.State.ExitCode}}", name).stdout.strip() != "0":
             raise RuntimeError("Container did not stop gracefully")
@@ -176,6 +205,7 @@ def main() -> None:
         try:
             failure(args.image, assets, "index")
             prepare(args.image, assets)
+            default_auth_refusal(args.image, assets)
             failure(args.image, assets, "index", "-e", "NCI_SI_EMBEDDING_MODEL=wrong-model")
             serve(args.image, assets)
             retained_builds(args.image, assets)
