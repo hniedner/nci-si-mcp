@@ -22,6 +22,7 @@ from nci_si_mcp.registry import SPECS
 ROOT = Path(__file__).resolve().parents[1]
 DOCKER = shutil.which("docker") or "docker"
 MCP_TOOLS = {spec.name for spec in SPECS if spec.name}
+STARTUP_SECONDS = 180
 
 
 def docker(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
@@ -106,7 +107,7 @@ def default_auth_refusal(image: str, assets: Path) -> None:
 
 
 def wait_healthy(name: str) -> None:
-    deadline = time.monotonic() + 180
+    deadline = time.monotonic() + STARTUP_SECONDS
     while time.monotonic() < deadline:
         status = docker("inspect", "--format", "{{.State.Health.Status}}", name).stdout.strip()
         if status == "healthy":
@@ -114,11 +115,11 @@ def wait_healthy(name: str) -> None:
         if status != "starting":
             raise RuntimeError(f"Docker health is {status}, not healthy")
         time.sleep(1)
-    raise RuntimeError("Docker health did not become healthy within 180 seconds")
+    raise RuntimeError(f"Docker health did not become healthy within {STARTUP_SECONDS} seconds")
 
 
 def wait_ready(port: int) -> None:
-    until = time.monotonic() + 180
+    until = time.monotonic() + STARTUP_SECONDS
     while time.monotonic() < until:
         try:
             if request(port, "/ready") == {"status": "ready"}:
@@ -126,7 +127,7 @@ def wait_ready(port: int) -> None:
         except urllib.error.URLError, TimeoutError, ConnectionError:
             pass  # A bounded startup poll; failure is reported below, never treated as ready.
         time.sleep(1)
-    raise RuntimeError("Container never became ready within 180 seconds")
+    raise RuntimeError(f"Container never became ready within {STARTUP_SECONDS} seconds")
 
 
 async def surface(port: int, assets: Path) -> None:
