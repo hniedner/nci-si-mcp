@@ -42,6 +42,7 @@
 # by design: the tool's summary says what it does when the argument is not given.
 
 resolve_release:
+  title: Current terminology release
   group: evs
   inputs: (terminology, channel?)
   patterns: {terminology: &terminology "^[a-z][a-z0-9_]*$"}
@@ -49,6 +50,7 @@ resolve_release:
   items: ["."]
   summary: Which release of a terminology is current, by channel (without one, the channel configured, A3.6.2); called explicitly for discovery; NCIt content calls may instead omit release under X-22.
 get_concept:
+  title: Concept details
   group: evs
   inputs: (terminology, release?, code, include[]?)
   patterns:
@@ -61,6 +63,7 @@ get_concept:
   not_offered: {include: [descendants]}
   summary: One concept with the detail selected.
 get_concepts:
+  title: Concept details in bulk
   group: evs
   inputs: (terminology, release?, codes[], include[]?)
   lists: {codes: 650}
@@ -70,6 +73,7 @@ get_concepts:
   values: {include: [synonyms, definitions, properties, semanticType]}
   summary: Many concepts in one platform call, with the detail selected.
 search_concepts:
+  title: Terminology search
   group: evs
   inputs: (terminology, release?, query, mode?, limit?, cursor?, retired?)
   patterns: {terminology: *terminology, release: *release}
@@ -90,6 +94,7 @@ search_concepts:
     concepts out: the platform offers no such selection, and each result's active and status
     let a caller drop them itself.
 get_concept_hierarchy:
+  title: Concept hierarchy
   group: evs
   inputs: (terminology, release?, code, direction, depth?, limit?, cursor?)
   patterns: {terminology: *terminology, release: *release, code: *code}
@@ -106,6 +111,7 @@ get_concept_hierarchy:
     the root in the platform's order, with each concept on them once in nodes; depth, limit
     and cursor do not apply to it.
 expand_value_set:
+  title: Subset members
   group: evs
   inputs: (terminology, release?, valueSet | code, count?, offset?, activeOnly?)
   patterns: {terminology: *terminology, release: *release, valueSet: *code, code: *code}
@@ -118,6 +124,7 @@ expand_value_set:
     The members of a value set, paged and bounded by the tool itself. It pages by count and offset, as FHIR $expand
     does, in place of a cursor (the exception to M6.1); activeOnly is false unless given.
 get_concept_neighborhood:
+  title: Concept relationships
   group: evs
   inputs: (terminology, release?, code, depth?, kinds[]?, maxNodes?, maxEdges?, budgetPerKind?, includeNegative?)
   patterns: {terminology: *terminology, release: *release, code: *code}
@@ -139,6 +146,7 @@ get_concept_neighborhood:
     are returned marked, with the nodes they reach, which are not followed further unless
     includeNegative.
 get_concept_subsets:
+  title: Concept subset membership
   group: evs
   inputs: (terminology, release?, code)
   patterns: {terminology: *terminology, release: *release, code: *code}
@@ -146,6 +154,7 @@ get_concept_subsets:
   items: ["subsets[]"]
   summary: The subsets a concept belongs to.
 get_concept_mappings:
+  title: Cross-terminology mappings
   group: evs
   inputs: (terminology, release?, code, targetTerminology?)
   patterns: {terminology: *terminology, release: *release, code: *code}
@@ -157,6 +166,7 @@ get_concept_mappings:
     from others are not this tool's. targetTerminology keeps the maps whose target the
     platform names exactly so, case included.
 resolve_retired_code:
+  title: Retired concept replacements
   group: evs
   inputs: (terminology, release?, code)
   patterns: {terminology: *terminology, release: *release, code: *code}
@@ -167,6 +177,7 @@ resolve_retired_code:
     what the platform names as replacing it: replacements is an empty list, present, where the
     platform names none, retired or not.
 list_relationships:
+  title: Relationship types
   group: evs
   inputs: (terminology, release?)
   patterns: {terminology: *terminology, release: *release}
@@ -174,6 +185,7 @@ list_relationships:
   items: ["relationships[]"]
   summary: The relationship catalogue of a release, polarity marked by code.
 list_terminologies:
+  title: Available terminologies
   group: evs
   inputs: ()
   returns: "{ terminologies[] }"
@@ -181,6 +193,7 @@ list_terminologies:
   summary: The terminologies available, with their current releases.
 
 resolve_registry_release:
+  title: Registry content state
   group: cadsr
   inputs: ()
   returns: registry_release
@@ -188,6 +201,7 @@ resolve_registry_release:
     The registry's content state: published false and the export's date while caDSR publishes
     no registry release, never an invented identifier; the release itself where one is.
 get_data_element:
+  title: Data element details
   group: cadsr
   inputs: (publicId | longName | questionText, version?, include[]?, registryRelease?)
   patterns: {publicId: &registry_id "^[1-9][0-9]*$", version: &registry_version "^[0-9]+([.][0-9]+)?$"}
@@ -202,6 +216,7 @@ get_data_element:
     where none has; longName is capability_unavailable until the platform serves that lookup
     (OP-C02).
 search_data_elements:
+  title: Data element search
   group: cadsr
   inputs: (query, mode?, filters?, limit?, cursor?, registryRelease?)
   free_text: [query]
@@ -216,6 +231,7 @@ search_data_elements:
     (upstream_cap). semantic and hybrid are capability_unavailable until the platform serves
     them (OP-C04).
 match_data_elements:
+  title: Data element candidates
   group: cadsr
   inputs: "(entities[{ name, userTip?, permissibleValues[]? }], matchLimit?, modelVariant?, similarityThreshold?, filters?, registryRelease?)"
   free_text: ["entities[].name", "entities[].userTip", "entities[].permissibleValues[]"]
@@ -234,6 +250,7 @@ match_data_elements:
     contract states no maximum, and one entity took 28.9 s (10 September 2026) against a match
     timeout of 45 s.
 match_value_meanings:
+  title: Value meaning candidates
   group: cadsr
   inputs: (values[], strictness?, terminologyScope?, registryRelease?)
   free_text: ["values[]"]
@@ -249,6 +266,7 @@ match_value_meanings:
     values a call: the contract states no maximum, and one value took 15.5 s (10 September
     2026) against a match timeout of 45 s.
 get_form:
+  title: Form details
   group: cadsr
   inputs: (publicId? | keyword?, version?, includeModules?, registryRelease?)
   patterns: {publicId: *registry_id, version: *registry_version}
@@ -260,6 +278,7 @@ get_form:
     invalid request saying the platform needs an identifier (Form/query takes a public or
     protocol id only).
 get_permissible_value:
+  title: Permissible value details
   group: cadsr
   inputs: (permissibleValueId, registryRelease?)
   patterns: {permissibleValueId: *registry_id}
@@ -269,6 +288,7 @@ get_permissible_value:
     A permissible value by the identifier caDSR REST publishes for it; capability_unavailable
     until the platform retrieves a value by it (OP-C10).
 get_code_map:
+  title: Commons value bindings
   group: cadsr
   inputs: (sourceSystem?, targetContext?, dataElementId?, limit?, cursor?, registryRelease?)
   patterns: {dataElementId: *registry_id}
@@ -282,6 +302,7 @@ get_code_map:
     the CRDC crosswalk with the contexts and commons that use it; targetContext selects those
     a context or commons uses, dataElementId one data element.
 list_contexts:
+  title: Registry contexts
   group: cadsr
   inputs: (limit?, cursor?, registryRelease?)
   returns: "{ contexts[context], nextCursor? }"
@@ -289,6 +310,7 @@ list_contexts:
   bounds: {limit: {default: 100, maximum: 1000}}
   summary: The registry's contexts, by name.
 list_classification_schemes:
+  title: Classification schemes
   group: cadsr
   inputs: (context?, limit?, cursor?, registryRelease?)
   returns: "{ classificationSchemes[classification_scheme], nextCursor? }"
@@ -299,6 +321,7 @@ list_classification_schemes:
     platform lists them (OP-C13). A data element's schemes come with get_data_element.
 
 find_data_elements_for_concept:
+  title: Data elements for a concept
   group: cross-domain
   inputs: (conceptCode, terminology?, release?, expandDescendants?, includePermissibleValues?, limit?, cursor?)
   patterns: {release: *release, conceptCode: *ncit_code}
@@ -315,6 +338,7 @@ find_data_elements_for_concept:
     It is served from a surface that names the NCIt release it used: today the Shared SI
     Service; caDSR REST, which cannot, answers release_not_available.
 get_concept_for_permissible_value:
+  title: Concept for a permissible value
   group: cross-domain
   inputs: "(permissibleValueId | { dataElementId, value }, release?)"
   patterns: {release: *release, dataElementId: *registry_id, permissibleValueId: *registry_id}
@@ -329,6 +353,7 @@ get_concept_for_permissible_value:
     (A7.7); a value it does not have is not_found. By permissibleValueId, capability_unavailable
     until the platform retrieves a value by it (OP-C10).
 resolve_stored_value:
+  title: Stored values in a commons
   group: cross-domain
   inputs: (conceptCode, commons, release?, dataElementId?)
   patterns: {release: *release, conceptCode: *ncit_code, dataElementId: *registry_id}
@@ -345,6 +370,7 @@ resolve_stored_value:
     found. A commons without a value-level binding (PDC, IDC) returns no stored value with
     evidence saying so, never the preferred term as if stored.
 get_release_alignment:
+  title: Terminology and registry alignment
   group: cross-domain
   inputs: (maxIntervalDays?)
   returns: "{ datasets[dataset_release], intervalDays, warning? }"
@@ -357,6 +383,7 @@ get_release_alignment:
     intervalDays exceeds it.
 
 ground_value:
+  title: Cross-registry value grounding
   group: workflow
   inputs: (conceptCode | text, commons?, release?, registryRelease?)
   patterns: {release: *release, conceptCode: *ncit_code}
@@ -373,6 +400,7 @@ ground_value:
     (1,000), its bound `results`; each hop's truncation is carried (perHop), and since each hop
     is asked by the concept, one hop's bound limits no other.
 expand_cohort:
+  title: Cohort concept expansion
   group: workflow
   inputs: (conceptCode, release?, maxDepth?, includeNegative?, maxNodes?)
   patterns: {release: *release, conceptCode: *ncit_code}
@@ -392,6 +420,7 @@ expand_cohort:
     composing get_concept_hierarchy (child, depth maxDepth) and get_concept_neighborhood
     (depth 1).
 harmonize_data_dictionary:
+  title: Data dictionary harmonization
   group: workflow
   inputs: "(columns[{ name, description?, sampleValues[]? }], registryRelease?, filters?)"
   free_text: ["columns[].name", "columns[].description", "columns[].sampleValues[]"]
