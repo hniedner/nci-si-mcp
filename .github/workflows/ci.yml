@@ -38,23 +38,26 @@ jobs:
 
   companions:
     name: companion containers (amd64)
-    needs: [changes]
-    if: github.event_name != 'pull_request' || needs.changes.outputs.companions == 'true'
+    needs: [changes, documentation]
+    if: ${{ !cancelled() && (github.event_name != 'pull_request' || needs.changes.outputs.companions == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
+      - name: Require the documentation producer
+        if: needs.documentation.result != 'success'
+        run: |
+          echo "::error::The documentation artifact producer did not succeed."
+          exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
       - uses: $/.github/actions/setup
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020  # v7.0.0
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
         with:
-          node-version: "24"
-          package-manager-cache: false
-      - run: npm ci --prefix docs/site-assets --ignore-scripts
-      - run: npm run build --prefix docs/site-assets
-      - run: pdm run python -m scripts.companion_context
+          name: documentation-preview-${{ github.sha }}
+          path: tmp/docs-site
+      - run: pdm run python -m scripts.companion_context --site tmp/docs-site
       - name: Build isolated local images
         run: |
           docker build --platform linux/amd64 --load -t nci-si-docs:local tmp/companion-context/docs
@@ -98,7 +101,15 @@ jobs:
       - run: npm run build --prefix docs/site-assets
       - run: pdm run acceptance-stories --check
       - run: pdm run docs-build
-      - run: npm exec --prefix docs/site-assets -- playwright install --with-deps chromium
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('docs/site-assets/package-lock.json') }}
+      # Browser binaries can be reused; Linux system libraries belong to this runner.
+      - run: npm exec --prefix docs/site-assets -- playwright install-deps chromium
+      - run: npm exec --prefix docs/site-assets -- playwright install chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
       - run: npm run test:browser --prefix docs/site-assets
       # Documentation only: never upload an evidence database, operational report or tmp/ tree.
       # PR artifacts are previews; this job has no deployment permissions or promotion step.
