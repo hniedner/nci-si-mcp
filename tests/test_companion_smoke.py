@@ -10,6 +10,30 @@ from scripts import companion_smoke
 
 
 class CompanionSmokeTest(unittest.TestCase):
+    def test_serving_probe_explicitly_opts_into_local_auth(self):
+        record = {
+            "NetworkSettings": {
+                "Ports": {"8000/tcp": [{"HostPort": "12345"}]},
+                "Networks": {"owned-network": {"IPAddress": "10.0.0.2"}},
+            }
+        }
+        commands = []
+
+        def docker(*args):
+            commands.append(args)
+            return json.dumps([record])
+
+        with patch.object(companion_smoke, "docker", docker):
+            self.assertEqual(
+                companion_smoke._serving_probe("owned-network", "owned-serving"),
+                ("10.0.0.2", 12345),
+            )
+        command = next(args for args in commands if args[0] == "run")
+        environment = dict(
+            command[i + 1].split("=", 1) for i, arg in enumerate(command) if arg == "-e"
+        )
+        self.assertEqual(environment.get("NCI_SI_HTTP_AUTH_MODE"), "trusted-local")
+
     def test_cleanup_failure_is_reported_after_other_owned_resources_are_removed(self):
         resources = {"container": {"owned-serving"}, "network": {"owned-network"}}
 

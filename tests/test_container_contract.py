@@ -1,5 +1,6 @@
 """Image declarations drive the actual entry point and executable HTTP probes."""
 
+import ast
 import json
 import os
 import re
@@ -135,6 +136,66 @@ class ProbeReply(BaseHTTPRequestHandler):
 
 
 class ImageProbeTest(unittest.TestCase):
+    @staticmethod
+    def image_probe_flags():
+        declaration = next(
+            line
+            for line in Path("Dockerfile").read_text().splitlines()
+            if line.startswith("HEALTHCHECK ")
+        )
+        return dict(
+            token.removeprefix("--").replace("-", "_").split("=", 1)
+            for token in shlex.split(declaration.partition(" CMD ")[0])[1:]
+        )
+
+    def test_probe_budgets_cover_cold_start_and_allow_transient_failures(self):
+        flags = self.image_probe_flags()
+        compose = yaml.safe_load(Path("container/compose.local.yaml").read_text())["services"][
+            "mcp"
+        ]["healthcheck"]
+        for key in ("interval", "timeout", "start_period", "retries"):
+            self.assertEqual(str(compose[key]), flags[key], key)
+        seconds = {
+            key: float(flags[key].removesuffix("s"))
+            for key in ("interval", "timeout", "start_period")
+        }
+        self.assertGreaterEqual(seconds["start_period"], container_smoke.STARTUP_SECONDS)
+        self.assertGreaterEqual(int(flags["retries"]), 2)
+        self.assertGreater(seconds["interval"], seconds["timeout"])
+        self.assertLessEqual(seconds["interval"], container_smoke.STARTUP_SECONDS)
+        for _path, command in self.commands():
+            request = self.probe_request(command)
+            options = {value.arg: ast.literal_eval(value.value) for value in request.keywords}
+            self.assertLess(options["timeout"], seconds["timeout"])
+
+    @staticmethod
+    def probe_request(command):
+        calls = [node for node in ast.walk(ast.parse(command[-1])) if isinstance(node, ast.Call)]
+        return next(
+            node
+            for node in calls
+            if isinstance(node.func, ast.Attribute) and node.func.attr == "urlopen"
+        )
+
+    def test_probes_without_port_override_use_the_exposed_image_port(self):
+        exposed = next(
+            line.removeprefix("EXPOSE ")
+            for line in Path("Dockerfile").read_text().splitlines()
+            if line.startswith("EXPOSE ")
+        )
+        with ThreadingHTTPServer(("127.0.0.1", int(exposed)), ProbeReply) as server:
+            thread = Thread(target=server.serve_forever)
+            thread.start()
+            try:
+                for expected, command in self.commands():
+                    ProbeReply.status, ProbeReply.requested = HTTPStatus.OK, []
+                    result = self.probe(command, None)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertEqual(ProbeReply.requested, [expected])
+            finally:
+                server.shutdown()
+                thread.join()
+
     def commands(self):
         declaration = next(
             (
@@ -178,9 +239,12 @@ class ImageProbeTest(unittest.TestCase):
 
     @staticmethod
     def probe(command, port):
+        environment = {"PATH": os.environ["PATH"]}
+        if port is not None:
+            environment["NCI_SI_HTTP_PORT"] = str(port)
         return subprocess.run(  # noqa: S603 - declared local probe with this interpreter
             [sys.executable, *command[1:]],
-            env={"PATH": os.environ["PATH"], "NCI_SI_HTTP_PORT": str(port)},
+            env=environment,
             capture_output=True,
             text=True,
             check=False,

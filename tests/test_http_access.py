@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 from dataclasses import replace
 from time import time
@@ -167,11 +168,58 @@ class OAuthDiscoveryTest(GovernedFixture):
             (401, 'Bearer SCOPE = "existing other"', 'Bearer SCOPE = "existing other"'),
             (401, 'Basic realm="local"', 'Basic realm="local"'),
             (200, challenge, challenge),
+            (
+                401,
+                'Bearer error_description="needs read, scope=x"',
+                'Bearer error_description="needs read, scope=x", scope="mcp records:read"',
+            ),
+            (401, 'Bearer scope_x="custom"', 'Bearer scope_x="custom", scope="mcp records:read"'),
         )
-        with patch("test_http_access.integration", return_value=self.policy().bundle):
-            for status, original, expected in cases:
-                with self.subTest(status=status):
-                    asyncio.run(scenario(status, original, expected))
+        configured = [(*case, ["mcp", "records:read"]) for case in cases]
+        configured.append((401, challenge, challenge, []))
+        for status, original, expected, scopes in configured:
+            policy = self.policy()
+            policy.bundle.auth.required_scopes = scopes
+            with (
+                self.subTest(status=status, original=original, scopes=scopes),
+                patch("test_http_access.integration", return_value=policy.bundle),
+            ):
+                asyncio.run(scenario(status, original, expected))
+
+    async def boundary_reply(self, status, headers, protected=True):
+        async def reply(_request):
+            return Response(status_code=status, headers=headers)
+
+        app = Starlette(routes=[Route("/mcp", reply, methods=["POST"])])
+        settings = self.configured() if protected else self.settings
+        with (
+            patch("mcp.server.mcpserver.MCPServer.streamable_http_app", return_value=app),
+            patch("test_http_access.integration", return_value=self.policy().bundle),
+        ):
+            async with http_app(settings, self.context) as client:
+                return await concept_response(client, {})
+
+    def test_only_protected_responses_replace_downstream_cache_policy(self):
+        for protected, expected in ((False, "public"), (True, "no-store")):
+            with self.subTest(protected=protected):
+                response = asyncio.run(
+                    self.boundary_reply(200, {"Cache-Control": "public"}, protected)
+                )
+                self.assertEqual(response.headers.get_list("cache-control"), [expected])
+
+    def test_bare_forbidden_response_is_not_logged_as_authentication_refusal(self):
+        logging.disable(logging.NOTSET)
+        with self.assertNoLogs("nci_si_mcp.transport", level="WARNING"):
+            response = asyncio.run(self.boundary_reply(403, {}))
+        self.assertEqual(response.status_code, 403)
+
+    def test_refusal_leaves_non_challenge_bearer_header_unchanged(self):
+        response = asyncio.run(
+            self.boundary_reply(
+                401, {"WWW-Authenticate": "Bearer", "X-Context": 'Bearer context="opaque"'}
+            )
+        )
+        self.assertEqual(response.headers["x-context"], 'Bearer context="opaque"')
 
 
 class RequiredAccessTest(GovernedFixture):
